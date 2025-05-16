@@ -45,6 +45,8 @@
 - **Inventory Manager**  
 - **Employee (Website Clerk)**  
 - **Delivery Driver**  
+- **Customer**  
+
    
 <!-- ## 🚀 Live Demo  
 *(If deployed, add link here - e.g.: [View Live Demo](https://yourdeploymentlink.com))*   -->
