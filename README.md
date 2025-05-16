@@ -83,7 +83,7 @@ python manage.py runserver
   <tr>
     <td align="center">
       <a href="https://github.com/Hazem-Ahmed-Salem">
-        <img src="https://avatars.githubusercontent.com/Hazem-Ahmed-Salem" width="100px;" alt="Hazem Ahmed Salem"/>
+        <img src="https://avatars.githubusercontent.com/Hazem-Ahmed-Salem" width="100px;" style="border-radius: 50%;" alt="Hazem Ahmed Salem"/>
         <br />
         <sub><b>Hazem Ahmed Salem</b></sub>
       </a>
@@ -93,7 +93,7 @@ python manage.py runserver
     </td>
     <td align="center">
       <a href="https://github.com/Ahmed482-21albadawy">
-        <img src="https://avatars.githubusercontent.com/Ahmed482-21albadawy" width="100px;" alt="Ahmed482-21albadawy"/>
+        <img src="https://avatars.githubusercontent.com/Ahmed482-21albadawy" width="100px;" style="border-radius: 50%;" alt="Ahmed482-21albadawy"/>
         <br />
         <sub><b>Ahmed Albadawy</b></sub>
       </a>
