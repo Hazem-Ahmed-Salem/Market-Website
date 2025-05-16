@@ -2,13 +2,20 @@
 * A modern e-commerce platform with product browsing, cart functionality, user authentication, and  admin panel 
 * It's not production ready
 
+## 🌟 Image Gallery
 <div align="center">
-  <video width="80%" controls>
-    <source src="https://www.youtube.com/watch?v=dQw4w9WgXcQ" type="video/mp4">
-    Your browser doesn't support videos. <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ">Download here</a>
-  </video>
-  <br>
-  <em>Full website walkthrough</em>
+  <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;">
+    <img src="./preview/1.jpg.jpg" width="30%" alt="Home Page">
+    <img src="./preview/2.jpg.jpg" width="30%" alt="Home Page">
+    <img src="./preview/3.jpg.jpg" width="30%" alt="Home Page">
+    <img src="./preview/4.jpg.jpg" width="30%" alt="Home Page">
+    <img src="./preview/5.jpg.jpg" width="30%" alt="Home Page">
+    <img src="./preview/6.jpg.jpg" width="30%" alt="Home Page">
+    <img src="./preview/7.jpg.jpg" width="30%" alt="Home Page">
+    <img src="./preview/8.jpg.jpg" width="30%" alt="Home Page">
+    
+  </div>
+  <em>Click images to enlarge</em>
 </div>
 
 ## ✨ Features  
