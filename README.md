@@ -2,9 +2,14 @@
 * A modern e-commerce platform with product browsing, cart functionality, user authentication, and  admin panel 
 * It's not production ready
 
-<video width="100%" controls>
-  <source src="https://www.youtube.com/watch?v=dQw4w9WgXcQ" type="video/mp4">
-</video>
+<div align="center">
+  <video width="80%" controls>
+    <source src="https://www.youtube.com/watch?v=dQw4w9WgXcQ" type="video/mp4">
+    Your browser doesn't support videos. <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ">Download here</a>
+  </video>
+  <br>
+  <em>Full website walkthrough</em>
+</div>
 
 ## ✨ Features  
 - **User System**  
