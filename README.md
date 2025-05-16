@@ -13,6 +13,7 @@
     <img src="https://github.com/Hazem-Ahmed-Salem/Market-Website/blob/master/Preview/6.jpg" width="30%" alt="Home Page">
     <img src="https://github.com/Hazem-Ahmed-Salem/Market-Website/blob/master/Preview/7.jpg" width="30%" alt="Home Page">
     <img src="https://github.com/Hazem-Ahmed-Salem/Market-Website/blob/master/Preview/8.jpg" width="30%" alt="Home Page">
+    <img src="https://github.com/Hazem-Ahmed-Salem/Market-Website/blob/master/Preview/9.jpg" width="30%" alt="Home Page">
     
   </div>
   <em>Click images to enlarge</em>
@@ -39,7 +40,7 @@
   - Analytics for sales  
   - User management  
 
-## ✨ User Roles  
+## 💻 User Roles  
 - **Manager**  
 - **Inventory Manager**  
 - **Employee (Website Clerk)**  
