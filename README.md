@@ -1,7 +1,6 @@
 # 🛍️ Market Website  
 * A modern e-commerce platform with product browsing, cart functionality, user authentication, and  admin panel 
 * It's not production ready
-* [Market Website Preview]
 
 <video width="100%" controls>
   <source src="./Preview/video/Video.mp4" type="video/mp4">
