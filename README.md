@@ -62,9 +62,6 @@ python -m venv venv
 # Install dependencies
 pip install -r requirements.txt  
 
-# OR manually install Django
-pip install django
-
 # Database setup
 python manage.py migrate
 
