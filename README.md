@@ -5,14 +5,14 @@
 ## 🌟 Image Gallery
 <div align="center">
   <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;">
-    <img src="./preview/1.jpg.jpg" width="30%" alt="Home Page">
-    <img src="./preview/2.jpg.jpg" width="30%" alt="Home Page">
-    <img src="./preview/3.jpg.jpg" width="30%" alt="Home Page">
-    <img src="./preview/4.jpg.jpg" width="30%" alt="Home Page">
-    <img src="./preview/5.jpg.jpg" width="30%" alt="Home Page">
-    <img src="./preview/6.jpg.jpg" width="30%" alt="Home Page">
-    <img src="./preview/7.jpg.jpg" width="30%" alt="Home Page">
-    <img src="./preview/8.jpg.jpg" width="30%" alt="Home Page">
+    <img src="./preview/1.jpg" width="30%" alt="Home Page">
+    <img src="./preview/2.jpg" width="30%" alt="Home Page">
+    <img src="./preview/3.jpg" width="30%" alt="Home Page">
+    <img src="./preview/4.jpg" width="30%" alt="Home Page">
+    <img src="./preview/5.jpg" width="30%" alt="Home Page">
+    <img src="./preview/6.jpg" width="30%" alt="Home Page">
+    <img src="./preview/7.jpg" width="30%" alt="Home Page">
+    <img src="./preview/8.jpg" width="30%" alt="Home Page">
     
   </div>
   <em>Click images to enlarge</em>
