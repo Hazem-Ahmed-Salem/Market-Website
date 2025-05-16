@@ -73,8 +73,8 @@ python manage.py collectstatic
 
 # For Running Development server
 python manage.py runserver
-# Access at http://127.0.0.1:8000
-# Admin at http://127.0.0.1:8000/admin
+### Access at http://127.0.0.1:8000
+### Admin at http://127.0.0.1:8000/admin
 
 
 ## 👥 Development Team
@@ -89,17 +89,7 @@ python manage.py runserver
       </a>
       <br />
       <br />
-      <span>Frontend dev</span>
-    </td>
-    <td align="center">
-      <a href="https://github.com/Hazem-Ahmed-Salem">
-        <img src="https://avatars.githubusercontent.com/Hazem-Ahmed-Salem" width="100px;" alt="Hazem Ahmed Salem"/>
-        <br />
-        <sub><b>Hazem Ahmed Salem</b></sub>
-      </a>
-      <br />
-      <br />
-      <span>Backend dev</span>
+      <span>Frontend and backend dev</span>
     </td>
     <td align="center">
       <a href="https://github.com/Ahmed482-21albadawy">
