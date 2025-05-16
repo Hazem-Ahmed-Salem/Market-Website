@@ -1,0 +1,208 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SignIn&SignUp</title>
+    <link rel="stylesheet" href="{% static 'user/css/style.css' %}"/>
+    <link rel="stylesheet" href="{% static 'user/css/all.css' %}" />
+    <style>
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 5px;
+            color: white;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transform: translateX(120%);
+            transition: transform 0.3s ease-in-out;
+            z-index: 1000;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            background-color: #4CAF50;
+        }
+
+        .notification.error {
+            background-color: #f44336;
+        }
+
+        .notification i {
+            font-size: 18px;
+        }
+    </style>
+  </head>
+  <body>
+    <div id="notification" class="notification">
+        <i class="fas fa-info-circle"></i>
+        <span id="notification-message"></span>
+    </div>
+
+    <div class="container">
+      <div class="forms-container">
+        <div class="signin-signup">
+          <form action="{% url 'login' %}" method="POST" class="sign-in-form" id="login-form">
+            {% csrf_token %}
+            <h2 class="title">Sign In</h2>
+            <div class="input-field">
+              <i class="fas fa-envelope"></i>
+              <input type="email" name="email" placeholder="Email" required />
+            </div>
+            <div class="input-field">
+              <i class="fas fa-lock"></i>
+              <input type="password" name="password" placeholder="Password" required />
+            </div>
+            <input type="submit" value="Login" class="btn solid" id="login-submit" />
+            <div id="login-error" class="error-message" style="display: none; color: #f44336; margin-top: 10px; text-align: center;"></div>
+            <p class="social-text">Or Sign in with social platforms</p>
+            <div class="social-media">
+              <a href="#" class="social-icon">
+                <i class="fa-brands fa-facebook"></i>
+              </a>
+              <a href="#" class="social-icon">
+                <i class="fab fa-twitter"></i>
+              </a>
+              <a href="#" class="social-icon">
+                <i class="fab fa-google"></i>
+              </a>
+              <a href="#" class="social-icon">
+                <i class="fab fa-linkedin-in"></i>
+              </a>
+            </div>
+          </form>
+          <form action="{% url 'signup' %}" method="POST" class="sign-up-form">
+            {% csrf_token %}
+            <h2 class="title">Sign Up</h2>
+            <div class="input-field">
+              <i class="fas fa-user"></i>
+              <input type="text" name="first_name" placeholder="First Name" required />
+            </div>
+            <div class="input-field">
+              <i class="fas fa-user"></i>
+              <input type="text" name="last_name" placeholder="Last Name" required />
+            </div>
+            <div class="input-field">
+              <i class="fas fa-envelope"></i>
+              <input type="email" name="email" placeholder="Email" required />
+            </div>
+            <div class="input-field">
+              <i class="fas fa-lock"></i>
+              <input type="password" name="password" placeholder="Password" required />
+            </div>
+            <input type="submit" value="Sign Up" class="btn solid" />
+
+            <p class="social-text">Or Sign up with social platforms</p>
+            <div class="social-media">
+              <a href="#" class="social-icon">
+                <i class="fab fa-facebook-f"></i>
+              </a>
+              <a href="#" class="social-icon">
+                <i class="fab fa-twitter"></i>
+              </a>
+              <a href="#" class="social-icon">
+                <i class="fab fa-google"></i>
+              </a>
+              <a href="#" class="social-icon">
+                <i class="fab fa-linkedin-in"></i>
+              </a>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="panels-container">
+
+        <div class="panel left-panel">
+            <div class="content">
+                <h3>New here?</h3>
+                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Optio minus natus est.</p>
+                <button class="btn transparent" id="sign-up-btn">Sign Up</button>
+            </div>
+            <img src="{% static 'user/images/log.svg' %}" class="image" alt="">
+        </div>
+
+        <div class="panel right-panel">
+            <div class="content">
+                <h3>One of us?</h3>
+                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Optio minus natus est.</p>
+                <button class="btn transparent" id="sign-in-btn">Sign In</button>
+            </div>
+            <img src="{% static 'user/images/register.svg' %}" class="image" alt="">
+        </div>
+      </div>
+    </div>
+    <script src="{% static 'user/js/app.js' %}"></script>
+    <script>
+        document.getElementById('login-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const form = this;
+            const submitButton = document.getElementById('login-submit');
+            const errorDiv = document.getElementById('login-error');
+            const notification = document.getElementById('notification');
+            const message = document.getElementById('notification-message');
+            
+            // Disable submit button and show loading state
+            submitButton.disabled = true;
+            submitButton.value = 'Logging in...';
+            errorDiv.style.display = 'none';
+            
+            const formData = new FormData(form);
+            
+            fetch(form.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                notification.className = 'notification ' + (data.success ? 'success' : 'error');
+                message.textContent = data.message;
+                notification.classList.add('show');
+                
+                if (data.success) {
+                    // Redirect after successful login
+                    setTimeout(() => {
+                        window.location.href = data.redirect_url;
+                    }, 1000);
+                } else {
+                    // Show error message
+                    errorDiv.textContent = data.message;
+                    errorDiv.style.display = 'block';
+                    submitButton.disabled = false;
+                    submitButton.value = 'Login';
+                }
+                
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, 3000);
+            })
+            .catch(error => {
+                notification.className = 'notification error';
+                message.textContent = 'An error occurred. Please try again.';
+                notification.classList.add('show');
+                
+                errorDiv.textContent = 'An error occurred. Please try again.';
+                errorDiv.style.display = 'block';
+                submitButton.disabled = false;
+                submitButton.value = 'Login';
+                
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, 3000);
+            });
+        });
+    </script>
+  </body>
+</html>

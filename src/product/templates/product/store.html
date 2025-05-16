@@ -1,0 +1,299 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShopEasy - Home</title>
+    <link rel="stylesheet" href="{% static 'user/css/style2.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <a href="{% url 'store' %}"><h1>ShopEasy</h1></a>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="{% url 'store' %}" class="active">Home</a></li>
+                    <li><a href="{% url 'featured_products' 'all' %}">Products</a></li>
+                    {% if user.user_role != 'customer' and user.is_authenticated %}
+                    <li>
+                        {% if user.user_role == 'employee' %}
+                        <a href="{% url 'employee_view' %}">
+                        {% elif user.user_role == 'manager' %}
+                        <a href="{% url 'manager_view' %}">
+                        {% elif user.user_role == 'inventory_manager' %}
+                        <a href="{% url 'inventory_manager_view' %}">
+                        {% endif %}
+                        {% if user.user_role == 'driver' %}
+                        <a href="{% url 'driver_view' %}">
+                        {% endif %}
+                        Work</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            <div class="header-icons">
+                <a href="{% url 'shopping_cart' %}"><i class="fas fa-shopping-cart"></i></a>
+                <a href="{% url 'wishlist_view' %}"><i class="fas fa-heart"></i></a>
+                {% if user.is_authenticated %}
+                <a href="{% url 'profile' %}" id="login-btn">
+                    <img src="{{ user.profile.profile_picture.url }}" alt="Profile Picture" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;" onclick="window.location.href='{% url 'profile' %}'">
+                </a>
+                {% else %}
+                <a href="{% url 'login_signup' %}" id="login-btn" onclick="window.location.href='{% url 'login_signup' %}'">Login</a>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero" style="background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('{% static 'product/images/welcome4.webp' %}'); background-size: cover; background-position: center; background-repeat: no-repeat;">
+            <div class="container">
+                <h2>Welcome to ShopEasy</h2>
+                <p>Discover amazing products at unbeatable prices</p>
+                <a href="{% url 'featured_products' 'all' %}" class="btn">Shop Now</a>
+            </div>
+        </section> 
+
+        <section class="featured-categories">
+            <div class="container">
+                <h2>Shop by Category</h2>
+                <div class="categories-grid">
+                    {% for category in categories %}
+                    <a href="{% url 'featured_products' category.name %}">
+                    <div class="category-card">
+                        <img src="{{ category.image.url }}" alt="{{ category.name }}">
+                        <h3>{{ category.name }}</h3>
+                    </div>
+                    </a>
+                    {% endfor %}
+                    
+                </div>
+            </div>
+        </section>
+        {% if user.is_authenticated %}
+        <section class="featured-products">
+            <div class="container">
+                <h2>Recommended Products</h2>
+                <div class="products-grid" id="featured-products">
+                    <!-- Products will be loaded via JavaScript -->
+                    {% for product in recommended_products %}
+                    <a href="{% url 'product_view' product.id %}">
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                            {% if product.originalPrice %}<span class="product-badge">Sale</span>{% endif %}
+                        </div>
+                        <div class="product-info">
+                            <h3>{{ product.name }}</h3>
+                            <div class="product-description">
+                                <p>{{product.category.name}}</p>
+                            </div>
+                            <div class="price">
+                                <span class="current-price">{{ product.price }}</span>
+                                </div>
+                            <div class="product-actions">
+                                <button class="btn-add-to-cart" data-id="{{ product.id }}">Add to Cart</button>
+                                <button class="btn-wishlist" data-id="{{ product.id }}">
+                                    <i class="fas fa-heart wishlist-icon {% if product in request.user.wishlist_products.all %}active{% endif %}" 
+                                        onclick="addToWishlist(event, {{ product.id }})"
+                                        style="position: absolute; bottom: 50px; right: 25px; cursor: pointer; font-size: 20px;">
+                                    </i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+        {% endif %}
+        <section class="featured-products">
+            <div class="container">
+                <h2>Featured Products</h2>
+                <div class="products-grid" id="featured-products">
+                    <!-- Products will be loaded via JavaScript -->
+                    {% for product in products %}
+                    <a href="{% url 'product_view' product.id %}">
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                            {% if product.originalPrice %}<span class="product-badge">Sale</span>{% endif %}
+                        </div>
+                        <div class="product-info">
+                            <h3>{{ product.name }}</h3>
+                            <div class="product-description">
+                                <p>{{product.category.name}}</p>
+                            </div>
+                            <div class="price">
+                                <span class="current-price">{{ product.price }}</span>
+                                </div>
+                            <div class="product-actions">
+                                <button class="btn-add-to-cart" data-id="{{ product.id }}">Add to Cart</button>
+                                <button class="btn-wishlist" data-id="{{ product.id }}">
+                                    <i class="fas fa-heart wishlist-icon {% if product in request.user.wishlist_products.all %}active{% endif %}" 
+                                        onclick="addToWishlist(event, {{ product.id }})"
+                                        style="position: absolute; bottom: 50px; right: 25px; cursor: pointer; font-size: 20px;">
+                                    </i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+        
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>ShopEasy</h3>
+                    <p>Your one-stop shop for all your needs.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="{% url 'store' %}">Home</a></li>
+                        <li><a href="{% url 'featured_products' 'all' %}">Products</a></li>
+                        <li><a href="{% url 'shopping_cart' %}">Cart</a></li>
+                        <li><a href="{% url 'profile' %}">Account</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Customer Service</h3>
+                    <ul>
+                        {% comment %} <li><a href="{% url 'complaint' %}">Contact Us</a></li> {% endcomment %}
+                        <li><a href="#">FAQs</a></li>
+                        <li><a href="#">Returns Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2023 ShopEasy. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{% static 'user/js/main.js' %}"></script>
+    
+    <script>
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        function addToWishlist(event, productId) {
+            event.preventDefault();
+            event.stopPropagation();
+            
+            const wishlistIcon = event.currentTarget;
+            const csrfToken = getCookie('csrftoken');
+            
+            // Toggle the heart color immediately
+            const isActive = wishlistIcon.classList.contains('active');
+            if (isActive) {
+                wishlistIcon.classList.remove('active');
+            } else {
+                wishlistIcon.classList.add('active');
+            }
+
+            fetch(`/product/wishlist/${productId}/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'added') {
+                    showNotification('Product added to wishlist!', 'success');
+                } else if (data.status === 'removed') {
+                    showNotification('Product removed from wishlist!', 'success');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                // Revert the heart color if there's an error
+                if (isActive) {
+                    wishlistIcon.classList.add('active');
+                } else {
+                    wishlistIcon.classList.remove('active');
+                }
+                showNotification('Error updating wishlist!', 'error');
+            });
+        }
+
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+    </script>
+
+    <style>
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 5px;
+            color: white;
+            z-index: 1000;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        .notification.success {
+            background-color: #4CAF50;
+        }
+
+        .notification.error {
+            background-color: #f44336;
+        }
+
+        .wishlist-icon {
+            color: #000;
+            transition: color 0.3s ease;
+        }
+
+        .wishlist-icon.active {
+            color: #ff4d4d;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</body>
+</html>

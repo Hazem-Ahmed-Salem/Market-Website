@@ -1,0 +1,360 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShopEasy - Product Detail</title>
+    <link rel="stylesheet" href="{% static 'user/css/style2.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <a href="{% url 'store' %}"><h1>ShopEasy</h1></a>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="{% url 'store' %}">Home</a></li>
+                    <li><a href="{% url 'featured_products' 'all' %}">Products</a></li>
+                    {% comment %} <li><a href="{% url 'complaint' %}">Complaint</a></li> {% endcomment %}
+                </ul>
+            </nav>
+            <div class="header-icons">
+                <a href="{% url 'shopping_cart' %}"><i class="fas fa-shopping-cart"></i></a>
+                <a href="{% url 'wishlist_view' %}"><i class="fas fa-heart"></i></a>
+                <a href="{% url 'profile' %}" id="login-btn"><img src="{{ user.profile.profile_picture.url }}" alt="Profile Picture" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;" onclick="window.location.href='{% url 'profile' %}'"></a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="product-detail">
+            <div class="container">
+                <div class="product-detail-container">
+                    <div class="product-images">
+                        <div class="main-image">
+                            <img src="{{product.image.url}}" style="border-radius: 10px; object-fit: cover;" alt="Product Image" id="main-product-image">
+                        </div>
+                    </div>
+                    
+                    <div class="product-info">
+                        <h1 id="product-title">{{product.name}}</h1>
+                        <div class="product-meta">
+                            {% if product.get_stock_status %}
+                                <span style="color: green; font-weight: bold;" class="availability">In Stock</span>
+                            {% else %}
+                                <span style="color: red; font-weight: bold;" class="availability">Out of Stock</span>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="price">
+                            <span class="current-price">${{product.price}}</span>
+                        </div>
+                        
+                        <div class="product-description">
+                            <p>{{product.category.name}}</p>
+                        </div>
+                        <div class="product-description">
+                            <p>{{product.description}}</p>
+                        </div>
+                        
+                        <div class="product-options">
+                            <div class="option">
+                                {%if product.category.name == 'Dairy' %}
+                                <label>Liters:</label>
+                                {% endif %}
+                                {%if product.category.name == 'Fruits' %}
+                                <label>Kg:</label>
+                                {% endif %}
+                                {%if product.category.name == 'Vegetables' %}
+                                <label>Kg:</label>
+                                {% endif %}
+                                {%if product.category.name == 'Beverages' %}
+                                <label>Liters:</label>
+                                {% endif %}
+                                {%if product.category.name == 'Snacks' %}
+                                <label>Packets:</label>
+                                {% endif %}
+                                
+
+                                <div class="quantity-selector">
+                                    <input type="number" value="1" min="1" id="quantity" style="width: 100px;">
+                                        
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="product-actions">
+                            {% if product.has_stock %}
+                            <button class="btn add-to-cart" onclick="addToCart({{product.id}}, this)">Add one to Cart</button>
+                            {% else %}
+                            <button class="btn add-to-cart" disabled>Out of Stock</button>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="product-shipping">
+                            <p><i class="fas fa-truck"></i> Free shipping on orders over $50</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="related-products">
+                    <h2>You May Also Like</h2>
+                    <div class="products-grid" id="related-products">
+                        <!-- Related products will be loaded via JavaScript -->
+                        {% for product in suggested_products %}
+                    <div class="product-card">
+                        <a href="{% url 'product_view' product.id %}">
+                        <div class="product-image">
+                            <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                        </div>
+                        </a>
+                        <div class="product-info">
+                            <h3>{{ product.name }}</h3>
+                            <div class="product-description">
+                                <p>{{product.category.name}}</p>
+                            </div>
+                            <div class="price">
+                                <span class="current-price">{{ product.price }}</span>
+                                </div>
+                            <div class="product-actions">
+                                <div class="product-actions">
+                                    <button class="btn-add-to-cart" onclick="addToCart({{product.id}}, this)">Add to Cart</button>
+                                    <script>
+                                    function showNotification(message, type = 'success') {
+                                        const notification = document.getElementById('notification');
+                                        const messageElement = document.getElementById('notification-message');
+                                        
+                                        // Set message and style
+                                        messageElement.textContent = message;
+                                        notification.style.backgroundColor = type === 'success' ? '#4CAF50' : '#f44336';
+                                        
+                                        // Show notification
+                                        notification.style.display = 'block';
+                                        
+                                        // Hide after 3 seconds
+                                        setTimeout(() => {
+                                            notification.style.display = 'none';
+                                        }, 3000);
+                                    }
+
+                                    function addToCart(productId, button) {
+                                        button.disabled = true;
+                                        button.textContent = 'Adding...';
+                                        quantitybody = document.getElementById("quantity")
+                                        if ( quantitybody.value < 0)
+                                        {
+                                            alert("the quantity can't be a negative number");
+                                            return ;
+                                        }
+                                        fetch(`{% url 'add_to_cart' product_id=0 %}`.replace('0', productId), {
+                                            method: 'POST',
+                                            headers: {
+                                                'X-CSRFToken': '{{ csrf_token }}',
+                                                'Content-Type': 'application/json'
+                                            },
+                                            body: JSON.stringify({ quantity: quantitybody.value })
+                                        })
+                                        .then(response => {
+                                            if (!response.ok) {
+                                                throw new Error('Network response was not ok');
+                                            }
+                                            return response.json();
+                                        })
+                                        .then(data => {
+                                            if (data.success) {
+                                                // Update cart count in header
+                                                const cartCountElement = document.querySelector('.cart-count');
+                                                if (cartCountElement) {
+                                                    cartCountElement.textContent = data.cart_count;
+                                                }
+                                                
+                                                button.textContent = 'Add one more to Cart';
+                                                button.disabled = false;
+                                                button.classList.add('added');
+                                                
+                                                // Show success notification
+                                                showNotification('Product added to cart successfully!', 'success');
+                                            } else {
+                                                throw new Error(data.error || 'Failed to add to cart');
+                                            }
+                                        })
+                                        .catch(error => {
+                                            console.error('Error:', error);
+                                            showNotification('Failed to add item to cart', 'error');
+                                            button.textContent = 'Add one to Cart';
+                                            button.disabled = false;
+                                        });
+                                    }
+                                    </script>
+                                </div>
+                                
+                                <button class="btn-wishlist" data-id="{{ product.id }}">
+                                    <i class="fas fa-heart wishlist-icon {% if product in request.user.wishlist_products.all %}active{% endif %}" 
+                                        onclick="addToWishlist(event, {{ product.id }})"
+                                        style="position: absolute; bottom: 70px; right: 25px; cursor: pointer; font-size: 20px;">
+                                    </i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <a href="{% url 'store' %}"><h3>ShopEasy</h3></a>
+                    <p>Your one-stop shop for all your needs.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="{% url 'store' %}">Home</a></li>
+                        <li><a href="{% url 'featured_products' 'all' %}">Products</a></li>
+                        <li><a href="{% url 'shopping_cart' %}">Cart</a></li>
+                        <li><a href="{% url 'profile' %}">Account</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Customer Service</h3>
+                    <ul>
+                        {% comment %} <li><a href="{% url 'complaint' %}">Contact Us</a></li> {% endcomment %}
+                        <li><a href="#">FAQs</a></li>
+                        <li><a href="#">Returns Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 ShopEasy. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+    <script src="{% static 'user/js/main.js' %}"></script>
+    <script>
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        function addToWishlist(event, productId) {
+            event.preventDefault();
+            event.stopPropagation();
+            
+            const wishlistIcon = event.currentTarget;
+            const csrfToken = getCookie('csrftoken');
+            
+            // Toggle the heart color immediately
+            const isActive = wishlistIcon.classList.contains('active');
+            if (isActive) {
+                wishlistIcon.classList.remove('active');
+            } else {
+                wishlistIcon.classList.add('active');
+            }
+
+            fetch(`/product/wishlist/${productId}/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'added') {
+                    showNotification('Product added to wishlist!', 'success');
+                } else if (data.status === 'removed') {
+                    showNotification('Product removed from wishlist!', 'success');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                // Revert the heart color if there's an error
+                if (isActive) {
+                    wishlistIcon.classList.add('active');
+                } else {
+                    wishlistIcon.classList.remove('active');
+                }
+                showNotification('Error updating wishlist!', 'error');
+            });
+        }
+
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+    </script>
+
+    <style>
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 5px;
+            color: white;
+            z-index: 1000;
+            animation: slideIn 0.5s ease-out;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            font-weight: 500;
+            min-width: 250px;
+            text-align: center;
+        }
+
+        .notification.success {
+            background-color: #4CAF50;
+            border: 1px solid #45a049;
+        }
+
+        .notification.error {
+            background-color: #f44336;
+            border: 1px solid #da190b;
+        }
+
+        .wishlist-icon {
+            color: #000;
+            transition: color 0.3s ease;
+        }
+
+        .wishlist-icon.active {
+            color: #ff4d4d;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</body>
+</html>

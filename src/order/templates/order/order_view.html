@@ -1,0 +1,82 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Order Details</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'user/css/all.css' %}" />
+    <link rel="stylesheet" href="{% static 'order/css/order_view.css' %}" />
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Order Details</h1>
+            <a href="{% url 'profile' %}" class="user-info" style="text-decoration: none; color: black;font-weight: bold;">
+                {% if user.profile.profile_picture %}
+                    <img src="{{ user.profile.profile_picture.url }}" alt="Profile Image" class="profile-image">
+                {% else %}
+                    <i class="fas fa-user"></i>
+                {% endif %}
+                {{ user.first_name|title }} {{ user.last_name|title }}
+            </a>
+        </div>
+
+        <div class="order-container">
+            <a href="{% url 'shopping_cart' %}" class="back-button">
+                <i class="fas fa-arrow-left"></i>
+                Back to Cart
+            </a>
+
+            {% if orders %}
+                <div class="orders-grid">
+                    {% for order in orders %}
+                        <div class="order-card">
+                            <div class="order-header">
+                                <div class="order-status">
+                                    <div class="status-badge status-{{ order.status }}">
+                                        <i class="fas fa-info-circle"></i>
+                                        {{ order.status|title }}
+                                    </div>
+                                </div>
+                                <div class="order-date">
+                                    <i class="fas fa-calendar"></i>
+                                    {{ order.order_date|date:"F d, Y" }}
+                                </div>
+                            </div>
+
+                            <div class="order-content">
+                                {% if order.product.image %}
+                                    <img src="{{ order.product.image.url }}" alt="{{ order.product.name }}" class="product-image">
+                                {% endif %}
+                                <div class="order-details">
+                                    <h2 class="product-name">{{ order.product.name|title }}</h2>
+                                    
+                                    <div class="order-info">
+                                        <i class="fas fa-shopping-cart"></i>
+                                        <span>Quantity: {{ order.quantity }}</span>
+                                    </div>
+                                    
+                                    <div class="order-info">
+                                        <i class="fas fa-tag"></i>
+                                        <span>Price per unit: ${{ order.price_per_unit }}</span>
+                                    </div>
+                                    
+                                    <div class="order-info total">
+                                        <i class="fas fa-dollar-sign"></i>
+                                        <span>Total: ${{ order.order_price }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-cart">
+                    <i class="fas fa-shopping-cart"></i>
+                    <p>No orders found</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

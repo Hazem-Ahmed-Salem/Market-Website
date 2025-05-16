@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Store - DirectAdmin Style</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Add Chart.js library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-blue: #3498db;
+            --light-blue: #e8f0fe;
+            --border-color: #e1e4e8;
+            --sidebar-width: 260px;
+            --header-height: 60px;
+            --text-color: #333;
+            --bg-color: #f8f9fa;
+            --card-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: #fff;
+            border-right: 1px solid var(--border-color);
+            padding: 0;
+            flex-shrink: 0;
+            height: 100vh;
+            overflow-y: auto;
+            position: fixed;
+            left: 0;
+            top: 0;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sidebar-header h1 {
+            font-size: 18px;
+            color: var(--text-color);
+            font-weight: 500;
+        }
+
+        .nav-section {
+            padding: 15px 0;
+        }
+
+        .nav-title {
+            padding: 10px 20px;
+            font-size: 12px;
+            text-transform: uppercase;
+            color: #666;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-item {
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            color: var(--text-color);
+            text-decoration: none;
+            font-size: 14px;
+            transition: background-color 0.2s;
+        }
+
+        .nav-item:hover {
+            background-color: var(--light-blue);
+        }
+
+        .nav-item.active {
+            background-color: var(--light-blue);
+            color: var(--primary-blue);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            padding: 20px;
+        }
+
+        /* Header */
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .search-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+            max-width: 600px;
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 8px 12px;
+            width: 100%;
+        }
+
+        .search-bar input {
+            border: none;
+            outline: none;
+            width: 100%;
+            font-size: 14px;
+            background: transparent;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            cursor: pointer;
+            border: none;
+            transition: opacity 0.2s;
+            background-color: var(--primary-blue);
+            color: white;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        /* Products Grid */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: var(--card-shadow);
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+        }
+
+        .product-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .product-details {
+            padding: 15px;
+        }
+
+        .product-name {
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--text-color);
+            margin-bottom: 8px;
+        }
+
+        .product-category {
+            color: var(--primary-blue);
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+        .product-price {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2ecc71;
+            margin-bottom: 8px;
+        }
+
+        .product-stock {
+            font-size: 13px;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .stock-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #2ecc71;
+            display: inline-block;
+        }
+
+        .no-products {
+            text-align: center;
+            padding: 40px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: var(--card-shadow);
+            grid-column: 1 / -1;
+        }
+
+        .no-products p {
+            color: #666;
+            font-size: 16px;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                display: none;
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .content-header {
+                flex-direction: column;
+                gap: 15px;
+            }
+            .search-container {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h1 style="font-size: 20px; font-weight: 700; color: #3498db;">Driver Dashboard</h1>
+        </div>
+        <div class="nav-section">
+            <div class="nav-title" style="font-size: 14px; font-weight: 700; color: black;">Actions</div>
+        
+            <a href="#" class="nav-item active" id="active-order-link">Active Orders</a>
+            <a href="#" class="nav-item" id="accept-order-link">Accept Order</a>
+            <a href="#" class="nav-item" id="cancelled-orders-link">History of cancelled Orders</a>
+            <a href="#" class="nav-item" id="delivered-orders-link">History of delivered Orders</a>
+
+            
+        
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="content-header">
+            <div class="search-container" id="search-container" style="display: flex;">
+                <div class="search-bar">
+                    <input type="text" id="searchInput" placeholder="Search orders by customer name..." oninput="filterOrders()">
+                </div>
+                <script>
+                    function filterOrders() {
+                        const searchInput = document.getElementById('searchInput');
+                        const searchText = searchInput.value.toLowerCase();
+                        const orderCards = document.querySelectorAll('.order-card');
+                        
+                        orderCards.forEach(card => {
+                            const customerName = card.querySelector('.customer-name').textContent.toLowerCase();
+                            
+                            if (customerName.includes(searchText)) {
+                                card.style.display = 'block';
+                            } else {
+                                card.style.display = 'none';
+                            }
+                        });
+                    }
+
+                    function addToWishlist(event, productId) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        
+                        const wishlistIcon = event.currentTarget;
+                        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+                        fetch(`/product/wishlist/${productId}/`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': csrfToken
+                            }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.status) {
+                                wishlistIcon.style.color = '#ff4d4d';
+                            } else {
+                                wishlistIcon.style.color = '#000';
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                        });
+                    }
+                </script>
+            </div>
+            <div class="header-actions">
+                <a href="{% url 'store' %}" class="btn">Get Back To Store</a>
+            </div>
+        </div>
+
+        <!-- Active Orders Container -->
+        <div id="active-orders-container" style="display: block; background: white; border-radius: 8px; box-shadow: var(--card-shadow); padding: 20px; margin-top: 20px;">
+            <div class="page-header">
+                <h2 style="text-align: center; color: #3498db; font-size: 2rem; font-weight: 700;">Active Orders</h2>
+            </div>
+            
+            <div id="active-order-notification" style="display: none; padding: 10px; margin: 10px 0; border-radius: 5px; text-align: center; background-color: #4CAF50; color: white;">
+                <span id="active-order-message">Order status updated successfully!</span>
+            </div>
+            
+            <div class="orders-content">
+                {% csrf_token %}
+                {% if active_orders %}
+                    <div class="orders-list" style="margin-top: 20px;">
+                        {% for order in active_orders %}
+                            <div class="order-card" id="active-order-{{ order.id }}" style="border: 1px solid #e1e4e8; border-radius: 8px; padding: 15px; margin-bottom: 15px; background-color: #f9f9f9;">
+                                <div class="order-header" style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                                    <div class="order-info">
+                                        <h3 style="margin: 0; color: #333; font-size: 18px;">Order #{{ order.id }}</h3>
+                                        <p style="margin: 5px 0; color: #666;">{{ order.order_date|date:"F d, Y H:i" }}</p>
+                                        <p style="margin: 5px 0; color: #666;" class="customer-name">Customer: {{ order.customer }}</p>
+                                        <p style="margin: 5px 0; color: #666;">Phone Number: {{ user.profile.phone_number }}</p>
+                                        <p style="margin: 5px 0; color: #666;">Delivery Address: {{ order.delivery_address }}</p>
+                                    </div>
+                                    <div class="order-total">
+                                        <p style="margin: 0; font-weight: bold; font-size: 18px; color: #2ecc71;">Total: ${{ order.order_price|floatformat:2 }}</p>
+                                        <span class="status-badge" style="display: inline-block; padding: 5px 10px; border-radius: 20px; background-color: #3498db; color: white; font-size: 14px;">Out for delivery</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="order-items" style="margin: 15px 0; border-top: 1px solid #e1e4e8; padding-top: 15px;">
+                                    <h4 style="margin: 0 0 10px 0; color: #333;">Order Items:</h4>
+                                    <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                                        {% for item in order.products %}
+                                            <div class="order-item" style="display: flex; align-items: center; padding: 10px; background: white; border-radius: 5px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); flex: 1; min-width: 300px;">
+                                                <div class="item-image" style="width: 60px; height: 60px; margin-right: 15px;">
+                                                    <img src="{{ item.product_image }}" alt="{{ item.product_name }}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 5px;">
+                                                </div>
+                                                <div class="item-details" style="flex: 1;">
+                                                    <p style="margin: 0; font-weight: bold; color: #333;">{{ item.product_name }}</p>
+                                                    <p style="margin: 5px 0; color: #666;">Quantity: {{ item.quantity }}</p>
+                                                </div>
+                                                <div class="item-price" style="text-align: right;">
+                                                    <p style="margin: 0; font-weight: bold; color: #2ecc71;">${{ item.order_price|floatformat:2 }}</p>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                
+                                <div class="order-actions" style="text-align: right; margin-top: 15px; display: flex; justify-content: flex-end; gap: 10px;">
+                                    <button class="deliver-order-btn" data-order-id="{{ order.id }}" style="background-color: #2ecc71; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 16px;">
+                                        Mark as Delivered
+                                    </button>
+                                    <button class="cancel-order-btn" data-order-id="{{ order.id }}" style="background-color: #e74c3c; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 16px;">
+                                        Cancel Order
+                                    </button>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div style="text-align: center; padding: 40px 20px;">
+                        <i class="fas fa-truck" style="font-size: 48px; color: #3498db; margin-bottom: 20px;"></i>
+                        <p style="font-size: 18px; color: #666;">No active orders at the moment.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Cancelled Orders History Container -->
+        <div id="cancelled-orders-container" style="display: none; background: white; border-radius: 8px; box-shadow: var(--card-shadow); padding: 20px; margin-top: 20px;">
+            <div class="page-header">
+                <h2 style="text-align: center; color: #3498db; font-size: 2rem; font-weight: 700;">History of Cancelled Orders</h2>
+            </div>
+            
+            <div class="orders-content">
+                {% csrf_token %}
+                {% if cancelled_orders %}
+                    <div class="orders-list" style="margin-top: 20px;">
+                        {% for order in cancelled_orders %}
+                            <div class="order-card" style="border: 1px solid #e1e4e8; border-radius: 8px; padding: 15px; margin-bottom: 15px; background-color: #f9f9f9;">
+                                <div class="order-header" style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                                    <div class="order-info">
+                                        <h3 style="margin: 0; color: #333; font-size: 18px;">Order #{{ order.id }}</h3>
+                                        <p style="margin: 5px 0; color: #666;">{{ order.order_date|date:"F d, Y H:i" }}</p>
+                                        <p style="margin: 5px 0; color: #666;" class="customer-name">Customer: {{ order.customer }}</p>
+                                        <p style="margin: 5px 0; color: #666;">Phone Number: {{ user.profile.phone_number }}</p>
+                                        <p style="margin: 5px 0; color: #666;">Delivery Address: {{ order.delivery_address }}</p>
+                                        {% if order.cancellation_reason %}
+                                            <p style="margin: 5px 0; color: #e74c3c; font-weight: bold;">Reason: {{ order.cancellation_reason }}</p>
+                                        {% endif %}
+                                        <p style="margin: 5px 0; color: #666;">Cancelled on: {{ order.updated_at|date:"F d, Y H:i" }}</p>
+                                    </div>
+                                    <div class="order-total">
+                                        <p style="margin: 0; font-weight: bold; font-size: 18px; color: #2ecc71;">Total: ${{ order.order_price|floatformat:2 }}</p>
+                                        <span class="status-badge" style="display: inline-block; padding: 5px 10px; border-radius: 20px; background-color: #e74c3c; color: white; font-size: 14px;">Cancelled</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="order-items" style="margin: 15px 0; border-top: 1px solid #e1e4e8; padding-top: 15px;">
+                                    <h4 style="margin: 0 0 10px 0; color: #333;">Order Items:</h4>
+                                    <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                                        {% for item in order.products %}
+                                            <div class="order-item" style="display: flex; align-items: center; padding: 10px; background: white; border-radius: 5px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); flex: 1; min-width: 300px;">
+                                                <div class="item-image" style="width: 60px; height: 60px; margin-right: 15px;">
+                                                    <img src="{{ item.product_image }}" alt="{{ item.product_name }}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 5px;">
+                                                </div>
+                                                <div class="item-details" style="flex: 1;">
+                                                    <p style="margin: 0; font-weight: bold; color: #333;">{{ item.product_name }}</p>
+                                                    <p style="margin: 5px 0; color: #666;">Quantity: {{ item.quantity }}</p>
+                                                </div>
+                                                <div class="item-price" style="text-align: right;">
+                                                    <p style="margin: 0; font-weight: bold; color: #2ecc71;">${{ item.order_price|floatformat:2 }}</p>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div style="text-align: center; padding: 40px 20px;">
+                        <i class="fas fa-times-circle" style="font-size: 48px; color: #e74c3c; margin-bottom: 20px;"></i>
+                        <p style="font-size: 18px; color: #666;">No cancelled orders in history.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Delivered Orders History Container -->
+        <div id="delivered-orders-container" style="display: none; background: white; border-radius: 8px; box-shadow: var(--card-shadow); padding: 20px; margin-top: 20px;">
+            <div class="page-header">
+                <h2 style="text-align: center; color: #3498db; font-size: 2rem; font-weight: 700;">History of Delivered Orders</h2>
+            </div>
+            
+            <div class="orders-content">
+                {% csrf_token %}
+                {% if delivered_orders %}
+                    <div class="orders-list" style="margin-top: 20px;">
+                        {% for order in delivered_orders %}
+                            <div class="order-card" style="border: 1px solid #e1e4e8; border-radius: 8px; padding: 15px; margin-bottom: 15px; background-color: #f9f9f9;">
+                                <div class="order-header" style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                                    <div class="order-info">
+                                        <h3 style="margin: 0; color: #333; font-size: 18px;">Order #{{ order.id }}</h3>
+                                        <p style="margin: 5px 0; color: #666;">{{ order.order_date|date:"F d, Y H:i" }}</p>
+                                        <p style="margin: 5px 0; color: #666;" class="customer-name">Customer: {{ order.customer }}</p>
+                                        <p style="margin: 5px 0; color: #666;">Phone Number: {{ user.profile.phone_number }}</p>
+                                        <p style="margin: 5px 0; color: #666;">Delivery Address: {{ order.delivery_address }}</p>
+                                        <p style="margin: 5px 0; color: #666;">Delivered on: {{ order.updated_at|date:"F d, Y H:i" }}</p>
+                                    </div>
+                                    <div class="order-total">
+                                        <p style="margin: 0; font-weight: bold; font-size: 18px; color: #2ecc71;">Total: ${{ order.order_price|floatformat:2 }}</p>
+                                        <span class="status-badge" style="display: inline-block; padding: 5px 10px; border-radius: 20px; background-color: #2ecc71; color: white; font-size: 14px;">Delivered</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="order-items" style="margin: 15px 0; border-top: 1px solid #e1e4e8; padding-top: 15px;">
+                                    <h4 style="margin: 0 0 10px 0; color: #333;">Order Items:</h4>
+                                    <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                                        {% for item in order.products %}
+                                            <div class="order-item" style="display: flex; align-items: center; padding: 10px; background: white; border-radius: 5px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); flex: 1; min-width: 300px;">
+                                                <div class="item-image" style="width: 60px; height: 60px; margin-right: 15px;">
+                                                    <img src="{{ item.product_image }}" alt="{{ item.product_name }}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 5px;">
+                                                </div>
+                                                <div class="item-details" style="flex: 1;">
+                                                    <p style="margin: 0; font-weight: bold; color: #333;">{{ item.product_name }}</p>
+                                                    <p style="margin: 5px 0; color: #666;">Quantity: {{ item.quantity }}</p>
+                                                </div>
+                                                <div class="item-price" style="text-align: right;">
+                                                    <p style="margin: 0; font-weight: bold; color: #2ecc71;">${{ item.order_price|floatformat:2 }}</p>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div style="text-align: center; padding: 40px 20px;">
+                        <i class="fas fa-check-circle" style="font-size: 48px; color: #2ecc71; margin-bottom: 20px;"></i>
+                        <p style="font-size: 18px; color: #666;">No delivered orders in history.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Confirmed Orders Container -->
+        <div id="confirmed-orders-container" style="display: block; background: white; border-radius: 8px; box-shadow: var(--card-shadow); padding: 20px; margin-top: 20px;">
+            <div class="page-header">
+                <h2 style="text-align: center; color: #3498db; font-size: 2rem; font-weight: 700;">Confirmed Orders</h2>
+            </div>
+            
+            <div id="order-notification" style="display: none; padding: 10px; margin: 10px 0; border-radius: 5px; text-align: center; background-color: #4CAF50; color: white;">
+                <span id="order-message">Order accepted successfully!</span>
+            </div>
+            
+            <div class="orders-content">
+                {% csrf_token %}
+                {% if confirmed_orders %}
+                    <div class="orders-list" style="margin-top: 20px;">
+                        {% for order in confirmed_orders %}
+                            <div class="order-card" id="order-{{ order.id }}" style="border: 1px solid #e1e4e8; border-radius: 8px; padding: 15px; margin-bottom: 15px; background-color: #f9f9f9;">
+                                <div class="order-header" style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                                    <div class="order-info">
+                                        <h3 style="margin: 0; color: #333; font-size: 18px;">Order #{{ order.id }}</h3>
+                                        <p style="margin: 5px 0; color: #666;">{{ order.order_date|date:"F d, Y H:i" }}</p>
+                                        <p style="margin: 5px 0; color: #666;" class="customer-name">Customer: {{ order.customer }}</p>
+                                        <p style="margin: 5px 0; color: #666;">Delivery Address: {{ order.delivery_address }}</p>
+                                    </div>
+                                    <div class="order-total">
+                                        <p style="margin: 0; font-weight: bold; font-size: 18px; color: #2ecc71;">Total: ${{ order.order_price|floatformat:2 }}</p>
+                                        <span class="status-badge" style="display: inline-block; padding: 5px 10px; border-radius: 20px; background-color: #f39c12; color: white; font-size: 14px;">{{ order.status|title }}</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="order-items" style="margin: 15px 0; border-top: 1px solid #e1e4e8; padding-top: 15px;">
+                                    <h4 style="margin: 0 0 10px 0; color: #333;">Order Items:</h4>
+                                    <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                                        {% for item in order.products %}
+                                            <div class="order-item" style="display: flex; align-items: center; padding: 10px; background: white; border-radius: 5px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); flex: 1; min-width: 300px;">
+                                                <div class="item-image" style="width: 60px; height: 60px; margin-right: 15px;">
+                                                    <img src="{{ item.product_image }}" alt="{{ item.product_name }}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 5px;">
+                                                </div>
+                                                <div class="item-details" style="flex: 1;">
+                                                    <p style="margin: 0; font-weight: bold; color: #333;">{{ item.product_name }}</p>
+                                                    <p style="margin: 5px 0; color: #666;">Quantity: {{ item.quantity }}</p>
+                                                </div>
+                                                <div class="item-price" style="text-align: right;">
+                                                    <p style="margin: 0; font-weight: bold; color: #2ecc71;">${{ item.order_price|floatformat:2 }}</p>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                
+                                <div class="order-actions" style="text-align: right; margin-top: 15px;">
+                                    <button class="accept-order-btn" data-order-id="{{ order.id }}" style="background-color: #2ecc71; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 16px;">
+                                        Accept Order
+                                    </button>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div style="text-align: center; padding: 40px 20px;">
+                        <i class="fas fa-clipboard-check" style="font-size: 48px; color: #3498db; margin-bottom: 20px;"></i>
+                        <p style="font-size: 18px; color: #666;">No confirmed orders at the moment.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="products-grid" style="display: none;">
+            {% csrf_token %}
+            {% if products %}
+                {% for product in products %}
+                    <div class="product-card" id="product-card-{{ product.id }}">
+                        <a href="{% url 'product_edit' product.id %}" style="text-decoration: none; color: inherit;">
+                            {% if product.image %}
+                                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
+                            {% endif %}
+                            <div class="product-details">
+                                <h3 class="product-name" style="color: black;">{{ product.name|title }}</h3>
+                                <div class="product-category" style="color: black;">{{ product.category.name|title }}</div>
+                                {% comment %} <div class="product-price">${{ product.price }}</div> {% endcomment %}
+                                <div class="product-stock" style="font-size: 1.2rem; padding: 8px 0; margin-top: 5px;">
+                                    <span class="stock-indicator" style="display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 8px;"></span>
+                                    <strong style="color: black;">Stock: <span >{{ product.get_stock_quantity }}</span> Units</strong>
+                                </div>
+                            </a>
+                                <div class="product-action" style="margin-top: 10px;">
+                                    <button class="delete-btn" data-product-id="{{ product.id }}" data-product-name="{{ product.name }}" style="background-color: #ff4d4d; color: white; border: none; border-radius: 4px; padding: 8px 16px; cursor: pointer; font-weight: bold;">Delete</button>
+                                </div>
+                            </div>
+                        <i class="fas fa-heart wishlist-icon" 
+                           onclick="addToWishlist(event, {{ product.id }})"
+                           style="position: absolute; top: 10px; right: 10px; cursor: pointer; font-size: 20px; color: {% if product in request.user.wishlist_products.all %}#ff4d4d{% else %}#000{% endif %};">
+                        </i>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="no-products">
+                    <p>No products available.</p>
+                </div>
+            {% endif %}
+        </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmation-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
+        <div style="background-color: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); max-width: 400px; width: 100%;">
+            <h3 style="margin-top: 0; color: #3498db;">Confirm Deletion</h3>
+            <p id="confirmation-message" style="margin-bottom: 20px;">Are you sure you want to delete this product?</p>
+            <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                <button id="cancel-delete" style="background-color: #95a5a6; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">Cancel</button>
+                <button id="confirm-delete" style="background-color: #ff4d4d; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Notification -->
+    <div id="delete-notification" style="display: none; position: fixed; bottom: 20px; right: 20px; padding: 15px 20px; background-color: #4CAF50; color: white; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); z-index: 1000;">
+        <span id="delete-message">Product deleted successfully!</span>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Safely get DOM elements with null checks
+            const trackStockLink = document.getElementById('track-stock-link');
+            const addProductLink = document.getElementById('add-product-link') || null;
+            const addStockLink = document.getElementById('add-stock-link') || null;
+            const decreaseStockLink = document.getElementById('decrease-stock-link') || null;
+            const pendingOrdersLink = document.getElementById('pending-orders-link') || null;
+            const productComplaintsLink = document.getElementById('product-complaints-link') || null;
+            const monitorPricesLink = document.getElementById('monitor-prices-link') || null;
+            const newProductsLink = document.getElementById('new-products-link') || null;
+            const addProductContainer = document.getElementById('add-product-container') || null;
+            const addStockContainer = document.getElementById('add-stock-container') || null;
+            const decreaseStockContainer = document.getElementById('decrease-stock-container') || null;
+            const pendingOrdersContainer = document.getElementById('pending-orders-container') || null;
+            const productComplaintsContainer = document.getElementById('product-complaints-container') || null;
+            const monitorPricesContainer = document.getElementById('monitor-prices-container') || null;
+            const newProductsContainer = document.getElementById('new-products-container') || null;
+            const cancelAddProductBtn = document.getElementById('cancel-add-product') || null;
+            const cancelAddStockBtn = document.getElementById('cancel-add-stock') || null;
+            const cancelDecreaseStockBtn = document.getElementById('cancel-decrease-stock') || null;
+            const productsGrid = document.querySelector('.products-grid') || null;
+            const searchContainer = document.getElementById('search-container') || null;
+            const addProductForm = document.getElementById('add-product-form') || null;
+            const addStockForm = document.getElementById('add-stock-form') || null;
+            const decreaseStockForm = document.getElementById('decrease-stock-form') || null;
+            const confirmedOrdersContainer = document.getElementById('confirmed-orders-container') || null;
+            const acceptOrderLink = document.getElementById('accept-order-link') || null;
+            const activeOrdersContainer = document.getElementById('active-orders-container') || null;
+            const activeOrderLink = document.getElementById('active-order-link') || null;
+            const cancelledOrdersContainer = document.getElementById('cancelled-orders-container') || null;
+            const cancelledOrdersLink = document.getElementById('cancelled-orders-link') || null;
+            const deliveredOrdersContainer = document.getElementById('delivered-orders-container') || null;
+            const deliveredOrdersLink = document.getElementById('delivered-orders-link') || null;
+            
+            // Function to hide all containers
+            function hideAllContainers() {
+                if (productsGrid) productsGrid.style.display = 'none';
+                if (addProductContainer) addProductContainer.style.display = 'none';
+                if (addStockContainer) addStockContainer.style.display = 'none';
+                if (decreaseStockContainer) decreaseStockContainer.style.display = 'none';
+                if (pendingOrdersContainer) pendingOrdersContainer.style.display = 'none';
+                if (productComplaintsContainer) productComplaintsContainer.style.display = 'none';
+                if (monitorPricesContainer) monitorPricesContainer.style.display = 'none';
+                if (searchContainer) searchContainer.style.display = 'none';
+                if (document.getElementById('new-products-container')) document.getElementById('new-products-container').style.display = 'none';
+                if (document.getElementById('edit-products-container')) document.getElementById('edit-products-container').style.display = 'none';
+                if (document.getElementById('technical-complaints-container')) document.getElementById('technical-complaints-container').style.display = 'none';
+                if (confirmedOrdersContainer) confirmedOrdersContainer.style.display = 'none';
+                if (activeOrdersContainer) activeOrdersContainer.style.display = 'none';
+                if (cancelledOrdersContainer) cancelledOrdersContainer.style.display = 'none';
+                if (deliveredOrdersContainer) deliveredOrdersContainer.style.display = 'none';
+            }
+            
+            // Function to reset active nav links
+            function resetActiveLinks() {
+                const navItems = document.querySelectorAll('.nav-item');
+                navItems.forEach(item => {
+                    item.classList.remove('active');
+                });
+            }
+            
+            // Show active orders container by default
+            hideAllContainers();
+            if (activeOrdersContainer) activeOrdersContainer.style.display = 'block';
+            if (searchContainer) searchContainer.style.display = 'flex';
+            
+            // Accept Order functionality
+            if (acceptOrderLink) {
+                acceptOrderLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    hideAllContainers();
+                    
+                    // Show confirmed orders container
+                    if (confirmedOrdersContainer) confirmedOrdersContainer.style.display = 'block';
+                    if (searchContainer) searchContainer.style.display = 'flex';
+                    
+                    // Highlight the link
+                    resetActiveLinks();
+                    acceptOrderLink.classList.add('active');
+                });
+            }
+
+            // Active Order functionality
+            if (activeOrderLink) {
+                activeOrderLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    hideAllContainers();
+                    
+                    // Show active orders container
+                    if (activeOrdersContainer) activeOrdersContainer.style.display = 'block';
+                    if (searchContainer) searchContainer.style.display = 'flex';
+                    
+                    // Highlight the link
+                    resetActiveLinks();
+                    activeOrderLink.classList.add('active');
+                });
+            }
+
+            // Cancelled Orders History functionality
+            if (cancelledOrdersLink) {
+                cancelledOrdersLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    hideAllContainers();
+                    
+                    // Show cancelled orders container
+                    if (cancelledOrdersContainer) cancelledOrdersContainer.style.display = 'block';
+                    if (searchContainer) searchContainer.style.display = 'flex';
+                    
+                    // Highlight the link
+                    resetActiveLinks();
+                    cancelledOrdersLink.classList.add('active');
+                });
+            }
+
+            // Delivered Orders History functionality
+            if (deliveredOrdersLink) {
+                deliveredOrdersLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    hideAllContainers();
+                    
+                    // Show delivered orders container
+                    if (deliveredOrdersContainer) deliveredOrdersContainer.style.display = 'block';
+                    if (searchContainer) searchContainer.style.display = 'flex';
+                    
+                    // Highlight the link
+                    resetActiveLinks();
+                    deliveredOrdersLink.classList.add('active');
+                });
+            }
+
+            // Handle accept order buttons
+            document.addEventListener('click', function(e) {
+                if (e.target.closest('.accept-order-btn')) {
+                    const acceptBtn = e.target.closest('.accept-order-btn');
+                    const orderId = acceptBtn.getAttribute('data-order-id');
+                    const orderCard = document.getElementById(`order-${orderId}`);
+                    
+                    if (!orderId) {
+                        console.error('Missing order ID');
+                        return;
+                    }
+                    
+                    // Get CSRF token
+                    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+                    if (!csrfToken) {
+                        console.error('CSRF token not found');
+                        return;
+                    }
+                    
+                    // Disable button to prevent multiple clicks
+                    acceptBtn.disabled = true;
+                    acceptBtn.textContent = 'Processing...';
+                    acceptBtn.style.backgroundColor = '#95a5a6';
+                    
+                    // Send AJAX request to accept_confirmed_order API
+                    fetch(`/order/accept-confirmed-order/${orderId}/`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': csrfToken
+                        }
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        // Show success notification
+                        const notification = document.getElementById('order-notification');
+                        const message = document.getElementById('order-message');
+                        
+                        if (notification && message) {
+                            message.textContent = data.message || 'Order accepted successfully!';
+                            notification.style.display = 'block';
+                            
+                            // Hide notification after 3 seconds
+                            setTimeout(() => {
+                                notification.style.display = 'none';
+                            }, 3000);
+                        }
+                        
+                        // Remove order card with animation
+                        if (orderCard) {
+                            orderCard.style.transition = 'all 0.5s ease';
+                            orderCard.style.opacity = '0';
+                            orderCard.style.transform = 'translateX(100px)';
+                            
+                            setTimeout(() => {
+                                orderCard.remove();
+                                
+                                // Check if there are no more orders
+                                const remainingOrders = document.querySelectorAll('.order-card');
+                                if (remainingOrders.length === 0) {
+                                    const ordersContent = document.querySelector('.orders-content');
+                                    if (ordersContent) {
+                                        ordersContent.innerHTML = `
+                                            <div style="text-align: center; padding: 40px 20px;">
+                                                <i class="fas fa-clipboard-check" style="font-size: 48px; color: #3498db; margin-bottom: 20px;"></i>
+                                                <p style="font-size: 18px; color: #666;">No confirmed orders at the moment.</p>
+                                            </div>
+                                        `;
+                                    }
+                                }
+                            }, 500);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        
+                        // Reset button
+                        acceptBtn.disabled = false;
+                        acceptBtn.textContent = 'Accept Order';
+                        acceptBtn.style.backgroundColor = '#2ecc71';
+                        
+                        // Show error notification
+                        const notification = document.getElementById('order-notification');
+                        const message = document.getElementById('order-message');
+                        
+                        if (notification && message) {
+                            message.textContent = 'Error accepting order. Please try again.';
+                            notification.style.backgroundColor = '#e74c3c';
+                            notification.style.display = 'block';
+                            
+                            // Hide notification after 3 seconds
+                            setTimeout(() => {
+                                notification.style.display = 'none';
+                                notification.style.backgroundColor = '#4CAF50';
+                            }, 3000);
+                        }
+                    });
+                }
+            });
+
+            // Handle deliver order buttons
+            document.addEventListener('click', function(e) {
+                if (e.target.closest('.deliver-order-btn')) {
+                    const deliverBtn = e.target.closest('.deliver-order-btn');
+                    const orderId = deliverBtn.getAttribute('data-order-id');
+                    const orderCard = document.getElementById(`active-order-${orderId}`);
+                    
+                    if (!orderId) {
+                        console.error('Missing order ID');
+                        return;
+                    }
+                    
+                    // Get CSRF token
+                    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+                    if (!csrfToken) {
+                        console.error('CSRF token not found');
+                        return;
+                    }
+                    
+                    // Disable button to prevent multiple clicks
+                    deliverBtn.disabled = true;
+                    deliverBtn.textContent = 'Processing...';
+                    deliverBtn.style.backgroundColor = '#95a5a6';
+                    
+                    // Also disable the cancel button
+                    const cancelBtn = orderCard.querySelector('.cancel-order-btn');
+                    if (cancelBtn) {
+                        cancelBtn.disabled = true;
+                        cancelBtn.style.backgroundColor = '#95a5a6';
+                    }
+                    
+                    // Send AJAX request to mark_order_as_delivered API
+                    fetch(`/order/mark-order-as-delivered/${orderId}/`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': csrfToken
+                        }
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        // Show success notification
+                        const notification = document.getElementById('active-order-notification');
+                        const message = document.getElementById('active-order-message');
+                        
+                        if (notification && message) {
+                            message.textContent = data.message || 'Order marked as delivered successfully!';
+                            notification.style.display = 'block';
+                            
+                            // Hide notification after 3 seconds
+                            setTimeout(() => {
+                                notification.style.display = 'none';
+                            }, 3000);
+                        }
+                        
+                        // Remove order card with animation
+                        if (orderCard) {
+                            orderCard.style.transition = 'all 0.5s ease';
+                            orderCard.style.opacity = '0';
+                            orderCard.style.transform = 'translateX(100px)';
+                            
+                            setTimeout(() => {
+                                orderCard.remove();
+                                
+                                // Check if there are no more orders
+                                const remainingOrders = document.querySelectorAll('#active-orders-container .order-card');
+                                if (remainingOrders.length === 0) {
+                                    const ordersContent = document.querySelector('#active-orders-container .orders-content');
+                                    if (ordersContent) {
+                                        ordersContent.innerHTML = `
+                                            <div style="text-align: center; padding: 40px 20px;">
+                                                <i class="fas fa-truck" style="font-size: 48px; color: #3498db; margin-bottom: 20px;"></i>
+                                                <p style="font-size: 18px; color: #666;">No active orders at the moment.</p>
+                                            </div>
+                                        `;
+                                    }
+                                }
+                            }, 500);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        
+                        // Reset buttons
+                        deliverBtn.disabled = false;
+                        deliverBtn.textContent = 'Mark as Delivered';
+                        deliverBtn.style.backgroundColor = '#2ecc71';
+                        
+                        if (cancelBtn) {
+                            cancelBtn.disabled = false;
+                            cancelBtn.style.backgroundColor = '#e74c3c';
+                        }
+                        
+                        // Show error notification
+                        const notification = document.getElementById('active-order-notification');
+                        const message = document.getElementById('active-order-message');
+                        
+                        if (notification && message) {
+                            message.textContent = 'Error updating order. Please try again.';
+                            notification.style.backgroundColor = '#e74c3c';
+                            notification.style.display = 'block';
+                            
+                            // Hide notification after 3 seconds
+                            setTimeout(() => {
+                                notification.style.display = 'none';
+                                notification.style.backgroundColor = '#4CAF50';
+                            }, 3000);
+                        }
+                    });
+                }
+            });
+
+            // Handle cancel order buttons
+            document.addEventListener('click', function(e) {
+                if (e.target.closest('.cancel-order-btn')) {
+                    const cancelBtn = e.target.closest('.cancel-order-btn');
+                    const orderId = cancelBtn.getAttribute('data-order-id');
+                    const orderCard = document.getElementById(`active-order-${orderId}`);
+                    
+                    if (!orderId) {
+                        console.error('Missing order ID');
+                        return;
+                    }
+                    
+                    // Get CSRF token
+                    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+                    if (!csrfToken) {
+                        console.error('CSRF token not found');
+                        return;
+                    }
+                    
+                    // Disable button to prevent multiple clicks
+                    cancelBtn.disabled = true;
+                    cancelBtn.textContent = 'Processing...';
+                    cancelBtn.style.backgroundColor = '#95a5a6';
+                    
+                    // Also disable the deliver button
+                    const deliverBtn = orderCard.querySelector('.deliver-order-btn');
+                    if (deliverBtn) {
+                        deliverBtn.disabled = true;
+                        deliverBtn.style.backgroundColor = '#95a5a6';
+                    }
+                    
+                    // Send AJAX request to mark_order_as_cancelled API
+                    fetch(`/order/mark-order-as-cancelled/${orderId}/`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': csrfToken
+                        }
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        // Show success notification
+                        const notification = document.getElementById('active-order-notification');
+                        const message = document.getElementById('active-order-message');
+                        
+                        if (notification && message) {
+                            message.textContent = data.message || 'Order cancelled successfully!';
+                            notification.style.display = 'block';
+                            
+                            // Hide notification after 3 seconds
+                            setTimeout(() => {
+                                notification.style.display = 'none';
+                            }, 3000);
+                        }
+                        
+                        // Remove order card with animation
+                        if (orderCard) {
+                            orderCard.style.transition = 'all 0.5s ease';
+                            orderCard.style.opacity = '0';
+                            orderCard.style.transform = 'translateX(100px)';
+                            
+                            setTimeout(() => {
+                                orderCard.remove();
+                                
+                                // Check if there are no more orders
+                                const remainingOrders = document.querySelectorAll('#active-orders-container .order-card');
+                                if (remainingOrders.length === 0) {
+                                    const ordersContent = document.querySelector('#active-orders-container .orders-content');
+                                    if (ordersContent) {
+                                        ordersContent.innerHTML = `
+                                            <div style="text-align: center; padding: 40px 20px;">
+                                                <i class="fas fa-truck" style="font-size: 48px; color: #3498db; margin-bottom: 20px;"></i>
+                                                <p style="font-size: 18px; color: #666;">No active orders at the moment.</p>
+                                            </div>
+                                        `;
+                                    }
+                                }
+                            }, 500);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        
+                        // Reset buttons
+                        cancelBtn.disabled = false;
+                        cancelBtn.textContent = 'Cancel Order';
+                        cancelBtn.style.backgroundColor = '#e74c3c';
+                        
+                        if (deliverBtn) {
+                            deliverBtn.disabled = false;
+                            deliverBtn.style.backgroundColor = '#2ecc71';
+                        }
+                        
+                        // Show error notification
+                        const notification = document.getElementById('active-order-notification');
+                        const message = document.getElementById('active-order-message');
+                        
+                        if (notification && message) {
+                            message.textContent = 'Error cancelling order. Please try again.';
+                            notification.style.backgroundColor = '#e74c3c';
+                            notification.style.display = 'block';
+                            
+                            // Hide notification after 3 seconds
+                            setTimeout(() => {
+                                notification.style.display = 'none';
+                                notification.style.backgroundColor = '#4CAF50';
+                            }, 3000);
+                        }
+                    });
+                }
+            });
+        });
+
+        function previewImage(input) {
+            var preview = document.getElementById('preview');
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+    </script>
+</body>
+</html>

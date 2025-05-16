@@ -1,0 +1,154 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete Profile</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'user/css/next_register.css' %}"/>
+    <link rel="stylesheet" href="{% static 'user/css/all.css' %}" />
+</head>
+<body>
+    <div class="container">
+        <div class="page-header">
+            <h1 class="page-title">Complete Your Profile</h1>
+            <p class="page-description">Please provide your additional information</p>
+        </div>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <div class="content-wrapper">
+            <div class="form-container">
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <div class="form-section">
+                        <h2 class="section-title"><strong>Profile Picture</strong></h2>
+                        <div class="profile-picture-section">
+                            <label for="profile_picture" class="profile-picture-label">
+                                <img id="preview-image" src="{% static 'user/images/default.svg' %}" alt="Default Profile Picture" class="profile-picture">
+                            </label>
+                            <div class="profile-picture-text">Click to change picture</div>
+                            <input type="file" id="profile_picture" name="profile_picture" value="{% static 'user/images/default.svg' %}" accept="image/*" onchange="previewImage(this);" style="display: none;">
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h2 class="section-title"><strong>Contact Information</strong></h2>
+                        <div class="form-group">
+                            <label for="gender"><strong>Gender</strong></label>
+                            <select id="gender" name="gender" required>
+                                <option value="">Select gender</option>
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone_number"><strong>Phone Number</strong></label>
+                            <input type="tel" id="phone_number" name="phone_number" required placeholder="Enter your phone number">
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h2 class="section-title"><strong>Address Information</strong></h2>
+                        <div class="form-group">
+                            <label for="address_type"><strong>Address Type</strong></label>
+                            <select id="address_type" name="address_type" required>
+                                <option value="">Select address type</option>
+                                <option value="Home">Home</option>
+                                <option value="Work">Work</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="address"><strong>Street Address</strong></label>
+                            <input type="text" id="address" name="address" required placeholder="Enter your street address">
+                        </div>
+                        <div class="form-group">
+                            <label for="apartment"><strong>Apartment/Suite (Optional)</strong></label>
+                            <input type="text" id="apartment" name="apartment" placeholder="Enter apartment or suite number">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="city"><strong>City</strong></label>
+                                <input type="text" id="city" name="city" required placeholder="Enter your city">
+                            </div>
+                            <div class="form-group">
+                                <label for="governorate"><strong>Governorate</strong></label>
+                                <select id="governorate" name="governorate" required>
+                                    <option value="">Select Governorate</option>
+                                    <option value="cairo">Cairo</option>
+                                    <option value="giza">Giza</option>
+                                    <option value="alexandria">Alexandria</option>
+                                    <option value="sharqia">Sharqia</option>
+                                    <option value="gharbia">Gharbia</option>
+                                    <option value="menoufia">Menoufia</option>
+                                    <option value="qalyubia">Qalyubia</option>
+                                    <option value="port_said">Port Said</option>
+                                    <option value="suez">Suez</option>
+                                    <option value="ismailia">Ismailia</option>
+                                    <option value="dakahlia">Dakahlia</option>
+                                    <option value="kafr_el_sheikh">Kafr El Sheikh</option>
+                                    <option value="beheira">Beheira</option>
+                                    <option value="assiut">Assiut</option>
+                                    <option value="sohag">Sohag</option>
+                                    <option value="qena">Qena</option>
+                                    <option value="luxor">Luxor</option>
+                                    <option value="aswan">Aswan</option>
+                                    <option value="red_sea">Red Sea</option>
+                                    <option value="new_valley">New Valley</option>
+                                    <option value="matrouh">Matrouh</option>
+                                    <option value="north_sinai">North Sinai</option>
+                                    <option value="south_sinai">South Sinai</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary"><strong>Complete Profile</strong></button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="panels-container">
+                <div class="panel left-panel">
+                    <div class="content">
+                        <h3>Hey There!</h3>
+                        <p>Upload your profile picture to make your profile more personal.</p>
+                    </div>
+                    <img src="{% static 'user/images/drag-and-drop.svg' %}" class="image" alt="">
+                </div>
+
+                <div class="panel right-panel">
+                    <div class="content">
+                        <h3>Complete Your Profile</h3>
+                        <p>Provide your contact information and address to make your profile more complete.</p>
+                    </div>
+                    <img src="{% static 'user/images/my-files.svg' %}" class="image" alt="">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function previewImage(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('preview-image').src = e.target.result;
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+    </script>
+</body>
+</html>

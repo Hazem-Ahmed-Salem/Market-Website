@@ -1,0 +1,131 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Edit Profile</title>
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="{% static 'user/css/profile.css' %}"/>
+        <link rel="stylesheet" href="{% static 'user/css/all.css' %}" />
+    </head>
+    <body>
+        <div class="container">
+            <div class="forms-container">
+                <div class="form-container">
+                    <h1 class="form-title">Edit Profile</h1>
+
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <form method="POST" enctype="multipart/form-data" class="profile-form">
+                        {% csrf_token %}
+                        
+                        <div class="form-section">
+                            <h2 class="section-title">Profile Picture</h2>
+                            <div class="profile-picture-upload">
+                                {% if user.profile.profile_picture %}
+                                    <img src="{{ user.profile.profile_picture.url }}" alt="Current Profile Picture" class="current-picture">
+                                {% endif %}
+                                <div class="upload-controls">
+                                    <label for="id_profile_picture" class="upload-label">
+                                        <i class="fas fa-camera"></i> Change Picture
+                                    </label>
+                                    <input type="file" name="profile_picture" id="id_profile_picture" accept="image/*" style="display: none;">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <h2 class="section-title">Personal Information</h2>
+                            <div class="form-group">
+                                <label for="id_first_name">First Name</label>
+                                <input type="text" name="first_name" id="id_first_name" value="{{ user.first_name }}" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="id_last_name">Last Name</label>
+                                <input type="text" name="last_name" id="id_last_name" value="{{ user.last_name }}" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="id_email">Email</label>
+                                <input type="email" name="email" id="id_email" value="{{ user.email }}" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="id_phone_number">Phone Number</label>
+                                <input type="tel" name="phone_number" id="id_phone_number" value="{{ user.profile.phone_number }}" class="form-control">
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <h2 class="section-title">Address Information</h2>
+                            <div class="form-group">
+                                <label for="id_address">Address</label>
+                                <input type="text" name="address" id="id_address" value="{{ user.profile.address }}" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="id_city">City</label>
+                                <input type="text" name="city" id="id_city" value="{{ user.profile.city }}" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="id_governorate">Governorate</label>
+                                <input type="text" name="governorate" id="id_governorate" value="{{ user.profile.governorate }}" class="form-control">
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn primary">Save Changes</button>
+                            <a href="{% url 'profile' %}" class="btn secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="panels-container">
+                <div class="panel left-panel">
+                    <div class="content">
+                        <h3>Update Your Profile</h3>
+                        <p>Keep your information up to date for a better shopping experience.</p>
+                    </div>
+                    <img src="{% static 'user/images/multiple-choice.svg' %}" class="image" alt="">
+                </div>
+
+                <div class="panel right-panel">
+                    <div class="content">
+                        <h3>Your Information</h3>
+                        <p>Make sure to provide accurate information for better service.</p>
+                    </div>
+                    <img src="{% static 'user/images/version-control.svg' %}" class="image" alt="">
+                </div>
+            </div>
+        </div>
+
+        <script>
+            document.getElementById('id_profile_picture').addEventListener('change', function(e) {
+                if (e.target.files && e.target.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const img = document.querySelector('.current-picture');
+                        if (img) {
+                            img.src = e.target.result;
+                        } else {
+                            const newImg = document.createElement('img');
+                            newImg.src = e.target.result;
+                            newImg.alt = 'Current Profile Picture';
+                            newImg.className = 'current-picture';
+                            document.querySelector('.profile-picture-upload').insertBefore(
+                                newImg,
+                                document.querySelector('.upload-controls')
+                            );
+                        }
+                    }
+                    reader.readAsDataURL(e.target.files[0]);
+                }
+            });
+        </script>
+    </body>
+</html>

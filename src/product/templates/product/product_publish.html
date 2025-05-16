@@ -1,0 +1,91 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Publish Product</title>
+    <link rel="stylesheet" href="{% static 'product/css/product_publish.css' %}">
+</head>
+<body>
+    <header class="header">
+        <h1 class="header-title" style="color: #3498db; font-size: 1.5rem; font-weight: 700;">Publish Product</h1>
+        <div class="user-profile">
+            <div class="user-info">
+                <div class="user-name">{{ user.get_full_name }}</div>
+                <div class="user-role">{{ user.role }}</div>
+            </div>
+            <img src="{{ user.profile.profile_picture.url }}" alt="Profile" class="user-avatar">
+        </div>
+    </header>
+    
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="product-details">
+            <div class="image-upload-container">
+                {% if product.image %}
+                    <img id="preview-image" src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image" style="cursor: pointer;">
+                {% else %}
+                    <img id="preview-image" src="{% static 'default-product.png' %}" alt="Default Product Image" class="product-image" style="cursor: pointer;">
+                {% endif %}
+                <input type="file" name="image" id="image-upload" accept="image/*" style="display: none;">
+            </div>
+
+            <div class="product-info">
+                <input type="text" name="name" value="{{ product.name }}" class="product-name" required>
+                <div class="price-input">
+                    <span class="currency">$</span>
+                    <input type="number" name="price" value="{{ product.price }}" step="0.01" min="0" class="product-price" required>
+                </div>
+                <textarea name="description" class="product-description" >{{ product.description }}</textarea>
+            </div>
+
+            <div class="product-meta">
+                <div class="meta-item">
+                    <span class="meta-label">Category</span>
+                    <select name="category" class="meta-value" required>
+                        {% for category in categories %}
+                            <option value="{{ category.name }}" {% if category.name == product.category.name %}selected{% endif %}>{{ category.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Created</span>
+                    <input type="text" value="{{ product.created_at|date:'M d, Y' }}" class="meta-value" readonly>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button type="submit" class="btn btn-primary">Publish Product</button>
+                {% if user.user_role == 'employee' %}
+            <a href="{% url 'employee_view' %}" class="btn btn-secondary">Cancel</a>
+            {% elif user.user_role == 'manager' %}
+            <a href="{% url 'manager_view' %}" class="btn btn-secondary">Cancel</a>
+            {% elif user.user_role == 'inventory_manager' %}
+            <a href="{% url 'inventory_manager_view' %}" class="btn btn-secondary">Cancel</a>
+            {% elif user.user_role == 'driver' %}
+            <a href="{% url 'driver_view' %}" class="btn btn-secondary">Cancel</a>
+            {% endif %}
+            </div>
+        </div>
+    </form>
+
+    <script>
+        document.getElementById('image-upload').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('preview-image').src = e.target.result;
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        document.getElementById('preview-image').addEventListener('click', function() {
+            document.getElementById('image-upload').click();
+        });
+    </script>
+</body>
+</html>
+

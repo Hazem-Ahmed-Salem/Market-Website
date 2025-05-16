@@ -1,0 +1,127 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Receipt of Payment</title>
+    <link rel="stylesheet" href="{% static 'user/css/style.css' %}"/>
+    <link rel="stylesheet" href="{% static 'user/css/all.css' %}" />
+    <style>
+        .receipt-card {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 14px 28px rgba(0,0,0,0.18), 0 10px 10px rgba(0,0,0,0.15);
+            max-width: 400px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 32px 32px 0 32px;
+            font-family: 'Poppins', sans-serif;
+        }
+        .receipt-header {
+            text-align: center;
+            font-size: 2rem;
+            font-weight: 700;
+            color: #3498db;
+            margin-bottom: 24px;
+        }
+        .receipt-list-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px dashed #e1e4e8;
+            color: #333;
+            font-size: 1rem;
+        }
+        .receipt-list-item:last-child {
+            border-bottom: none;
+        }
+        .receipt-summary {
+            background: #f8f9fa;
+            padding: 20px 0 10px 0;
+            font-size: 1.1rem;
+            margin-top: 18px;
+            border-radius: 8px;
+        }
+        .receipt-summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        .receipt-summary-row.total {
+            font-weight: 700;
+            color: #3498db;
+            font-size: 1.2rem;
+        }
+        .receipt-footer {
+            text-align: center;
+            padding: 24px 0 16px 0;
+        }
+        .print-btn {
+            background: #3498db;
+            border: none;
+            color: #fff;
+            font-size: 1.1rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border-radius: 24px;
+            padding: 10px 32px;
+            transition: background 0.2s;
+        }
+        .print-btn:hover {
+            background: #0d47a1;
+        }
+        @media print {
+            body { background: #fff !important; }
+            .receipt-footer { display: none !important; }
+            .container, .panels-container, .panel { box-shadow: none !important; background: #fff !important; }
+        }
+        .container::before {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" style="display: flex; align-items: center; justify-content: center; min-height: 100vh; background: #f8f9fa;">
+        <div class="receipt-card">
+            <div class="receipt-header">Receipt of Payment</div>
+            <div class="receipt-list">
+                {% for item in order.products %}
+                <div class="receipt-list-item">
+                    <span>{{ item.product_name }} X {{ item.quantity }}</span>
+                    <span>${{ item.order_price_without_vat|floatformat:2 }}</span>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="receipt-summary">
+                <div class="receipt-summary-row">
+                    <span>Sub Total:</span>
+                    <span>{{ order.order_price_without_vat|floatformat:2 }}</span>
+                </div>
+                <div class="receipt-summary-row">
+                    <span>VAT (20%):</span>
+                    <span>{{ order.order_vat|floatformat:2 }}</span>
+                </div>
+                <div class="receipt-summary-row total">
+                    <span>Total:</span>
+                    <span>{{ order.order_price }}</span>
+                </div>
+            </div>
+            <div class="receipt-footer" style="display: flex; gap: 15px; justify-content: center;">
+                <button class="print-btn" onclick="window.print()" style="width: 220px; text-align: center; justify-content: center;">
+                    <i class="fas fa-print"></i> Print
+                </button>
+                <a href="{% url 'store' %}" style="text-decoration: none;">
+                    <button class="print-btn" style="background: #4CAF50; width: 170px; text-align: center; justify-content: center;">
+                        <i class="fas fa-store"></i> Store
+                    </button>
+                </a>
+            </div>
+        </div>
+        
+    </div>
+</body>
+</html>

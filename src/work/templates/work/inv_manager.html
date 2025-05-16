@@ -1,0 +1,1679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Store - DirectAdmin Style</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Add Chart.js library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-blue: #3498db;
+            --light-blue: #e8f0fe;
+            --border-color: #e1e4e8;
+            --sidebar-width: 260px;
+            --header-height: 60px;
+            --text-color: #333;
+            --bg-color: #f8f9fa;
+            --card-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: #fff;
+            border-right: 1px solid var(--border-color);
+            padding: 0;
+            flex-shrink: 0;
+            height: 100vh;
+            overflow-y: auto;
+            position: fixed;
+            left: 0;
+            top: 0;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sidebar-header h1 {
+            font-size: 18px;
+            color: var(--text-color);
+            font-weight: 500;
+        }
+
+        .nav-section {
+            padding: 15px 0;
+        }
+
+        .nav-title {
+            padding: 10px 20px;
+            font-size: 12px;
+            text-transform: uppercase;
+            color: #666;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-item {
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            color: var(--text-color);
+            text-decoration: none;
+            font-size: 14px;
+            transition: background-color 0.2s;
+        }
+
+        .nav-item:hover {
+            background-color: var(--light-blue);
+        }
+
+        .nav-item.active {
+            background-color: var(--light-blue);
+            color: var(--primary-blue);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            padding: 20px;
+        }
+
+        /* Header */
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .search-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+            max-width: 600px;
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 8px 12px;
+            width: 100%;
+        }
+
+        .search-bar input {
+            border: none;
+            outline: none;
+            width: 100%;
+            font-size: 14px;
+            background: transparent;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            cursor: pointer;
+            border: none;
+            transition: opacity 0.2s;
+            background-color: var(--primary-blue);
+            color: white;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        /* Products Grid */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: var(--card-shadow);
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+        }
+
+        .product-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .product-details {
+            padding: 15px;
+        }
+
+        .product-name {
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--text-color);
+            margin-bottom: 8px;
+        }
+
+        .product-category {
+            color: var(--primary-blue);
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+        .product-price {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2ecc71;
+            margin-bottom: 8px;
+        }
+
+        .product-stock {
+            font-size: 13px;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .stock-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #2ecc71;
+            display: inline-block;
+        }
+
+        .no-products {
+            text-align: center;
+            padding: 40px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: var(--card-shadow);
+            grid-column: 1 / -1;
+        }
+
+        .no-products p {
+            color: #666;
+            font-size: 16px;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                display: none;
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .content-header {
+                flex-direction: column;
+                gap: 15px;
+            }
+            .search-container {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h1 style="font-size: 20px; font-weight: 700; color: #3498db;">Inventory Manager Dashboard</h1>
+        </div>
+        <div class="nav-section">
+            <div class="nav-title" style="font-size: 14px; font-weight: 700; color: black;">Actions</div>
+            
+            <a href="#" class="nav-item active" id="track-stock-link">Track Stock Level</a>
+            <a href="#" class="nav-item" id="pending-orders-link">Pending Orders</a>
+            <a href="#" class="nav-item" id="add-product-link">Add new Product</a>
+            <a href="#" class="nav-item" id="add-stock-link">Add Stock</a>
+            <a href="#" class="nav-item" id="decrease-stock-link">Decrease Stock</a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="content-header">
+            <div class="search-container" id="search-container" style="display: flex;">
+                <div class="search-bar">
+                    <input type="text" id="searchInput" placeholder="Search products by name or category..." oninput="filterProducts()">
+                </div>
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        // Helper function to get DOM elements with null checks
+                        function getElement(id) {
+                            return document.getElementById(id) || null;
+                        }
+                        
+                        // Navigation links and their corresponding containers
+                        const navConfig = [
+                            { linkId: 'track-stock-link', containerId: null, displayType: null, isDefault: true },
+                            { linkId: 'product-complaints-link', containerId: 'product-complaints-container', displayType: 'block' },
+                            { linkId: 'monitor-prices-link', containerId: 'monitor-prices-container', displayType: 'block' },
+                            { linkId: 'pending-orders-link', containerId: 'pending-orders-container', displayType: 'block' },
+                            { linkId: 'add-product-link', containerId: 'add-product-container', displayType: 'block' },
+                            { linkId: 'add-stock-link', containerId: 'add-stock-container', displayType: 'block' },
+                            { linkId: 'decrease-stock-link', containerId: 'decrease-stock-container', displayType: 'block' },
+                            { linkId: 'new-products-link', containerId: 'new-products-container', displayType: 'block', isDefaultForEmployee: true },
+                            { linkId: 'edit-product-link', containerId: 'edit-products-container', displayType: 'block' },
+                            { linkId: 'technical-complaints-link', containerId: 'technical-complaints-container', displayType: 'block' }
+                        ];
+                        
+                        // Get all navigation elements and containers
+                        const navElements = {};
+                        const containers = {
+                            productsGrid: document.querySelector('.products-grid'),
+                            searchContainer: getElement('search-container')
+                        };
+                        
+                        // Initialize navigation elements and containers
+                        navConfig.forEach(item => {
+                            navElements[item.linkId] = getElement(item.linkId);
+                            if (item.containerId) {
+                                containers[item.containerId] = getElement(item.containerId);
+                            }
+                        });
+                        
+                        // Cancel buttons for forms
+                        const cancelButtons = {
+                            'cancel-add-product': 'track-stock-link',
+                            'cancel-add-stock': 'track-stock-link',
+                            'cancel-decrease-stock': 'track-stock-link'
+                        };
+                        
+                        // Function to hide all containers
+                        function hideAllContainers() {
+                            // Hide products grid and search container
+                            if (containers.productsGrid) containers.productsGrid.style.display = 'none';
+                            if (containers.searchContainer) containers.searchContainer.style.display = 'none';
+                            
+                            // Hide all other containers
+                            Object.keys(containers).forEach(key => {
+                                if (key !== 'productsGrid' && key !== 'searchContainer' && containers[key]) {
+                                    containers[key].style.display = 'none';
+                                }
+                            });
+                        }
+                        
+                        // Function to reset active nav links
+                        function resetActiveLinks() {
+                            document.querySelectorAll('.nav-item').forEach(item => {
+                                item.classList.remove('active');
+                            });
+                        }
+                        
+                        // Function to activate a specific navigation item
+                        function activateNavItem(linkId) {
+                            hideAllContainers();
+                            resetActiveLinks();
+                            
+                            const navItem = navConfig.find(item => item.linkId === linkId);
+                            if (!navItem) return;
+                            
+                            // For Track Stock Level, show products grid and search
+                            if (linkId === 'track-stock-link') {
+                                if (containers.productsGrid) containers.productsGrid.style.display = 'grid';
+                                if (containers.searchContainer) containers.searchContainer.style.display = 'flex';
+                                
+                                if (containers.productsGrid) {
+                                    containers.productsGrid.scrollIntoView({ behavior: 'smooth' });
+                                }
+                            } 
+                            // For other navigation items, show their specific container
+                            else if (navItem.containerId && containers[navItem.containerId]) {
+                                containers[navItem.containerId].style.display = navItem.displayType || 'block';
+                                
+                                if (containers[navItem.containerId]) {
+                                    containers[navItem.containerId].scrollIntoView({ behavior: 'smooth' });
+                                }
+                            }
+                            
+                            // Highlight the active link
+                            if (navElements[linkId]) {
+                                navElements[linkId].classList.add('active');
+                            }
+                        }
+                        
+                        // Set up click handlers for all navigation links
+                        Object.keys(navElements).forEach(linkId => {
+                            const link = navElements[linkId];
+                            if (link) {
+                                link.addEventListener('click', function(e) {
+                                    e.preventDefault();
+                                    activateNavItem(linkId);
+                                });
+                            }
+                        });
+                        
+                        // Set up cancel buttons
+                        Object.keys(cancelButtons).forEach(buttonId => {
+                            const button = getElement(buttonId);
+                            if (button) {
+                                button.addEventListener('click', function() {
+                                    activateNavItem(cancelButtons[buttonId]);
+                                });
+                            }
+                        });
+                        
+                        // Initialize the page - show default content based on user role
+                        hideAllContainers();
+                        
+                        // Check if user is an employee
+                        const isEmployee = {% if user.user_role == 'employee' %}true{% else %}false{% endif %};
+                        
+                        if (isEmployee && navElements['new-products-link'] && containers['new-products-container']) {
+                            // For employees, show new products by default
+                            activateNavItem('new-products-link');
+                        } else {
+                            // For other roles, show products grid by default
+                            activateNavItem('track-stock-link');
+                        }
+                        
+                        // Function to filter products in the main products grid
+                        function filterProducts() {
+                            const searchInput = getElement('searchInput');
+                            if (!searchInput) return;
+                            
+                            const searchText = searchInput.value.toLowerCase();
+                            const productCards = document.querySelectorAll('.product-card');
+                            
+                            productCards.forEach(card => {
+                                const productName = card.querySelector('.product-name').textContent.toLowerCase();
+                                const productCategory = card.querySelector('.product-category').textContent.toLowerCase();
+                                
+                                if (productName.includes(searchText) || productCategory.includes(searchText)) {
+                                    card.style.display = 'block';
+                                } else {
+                                    card.style.display = 'none';
+                                }
+                            });
+                        }
+                        
+                        // Set up the main search functionality
+                        const searchInput = getElement('searchInput');
+                        if (searchInput) {
+                            searchInput.addEventListener('input', filterProducts);
+                        }
+                        
+                        // Function to add products to wishlist
+                        function addToWishlist(event, productId) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                            
+                            const wishlistIcon = event.target.closest('.wishlist-icon');
+                            if (!wishlistIcon) return;
+                            
+                            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value;
+                            if (!csrfToken) {
+                                console.error('CSRF token not found');
+                                return;
+                            }
+
+                            fetch(`/product/wishlist/${productId}/`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRFToken': csrfToken
+                                }
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.status) {
+                                    wishlistIcon.style.color = '#ff4d4d';
+                                } else {
+                                    wishlistIcon.style.color = '#000';
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                            });
+                        }
+                        
+                        // Add global event listener for wishlist icons
+                        document.addEventListener('click', function(e) {
+                            if (e.target.closest('.wishlist-icon')) {
+                                const wishlistIcon = e.target.closest('.wishlist-icon');
+                                const productId = wishlistIcon.getAttribute('data-product-id');
+                                if (productId) {
+                                    addToWishlist(e, productId);
+                                }
+                            }
+                        });
+
+                        // Function to filter products in the edit products container
+                        function filterEditProducts() {
+                            const searchInput = getElement('edit-products-search');
+                            if (!searchInput) return;
+                            
+                            const searchText = searchInput.value.toLowerCase();
+                            const productCards = document.querySelectorAll('#edit-products-grid .product-card');
+                            let visibleCount = 0;
+                            
+                            productCards.forEach(card => {
+                                const productName = card.querySelector('.product-name').textContent.toLowerCase();
+                                const productCategory = card.querySelector('.product-category').textContent.toLowerCase();
+                                
+                                if (productName.includes(searchText) || productCategory.includes(searchText)) {
+                                    card.style.display = 'block';
+                                    visibleCount++;
+                                } else {
+                                    card.style.display = 'none';
+                                }
+                            });
+                            
+                            // Show "no results" message if all products are hidden
+                            const noResultsMessage = getElement('no-search-results');
+                            
+                            if (visibleCount === 0 && searchText !== '') {
+                                // Create "no results" message if it doesn't exist
+                                if (!noResultsMessage) {
+                                    const messageDiv = document.createElement('div');
+                                    messageDiv.id = 'no-search-results';
+                                    messageDiv.className = 'no-products';
+                                    messageDiv.style.textAlign = 'center';
+                                    messageDiv.style.padding = '40px';
+                                    messageDiv.style.background = 'white';
+                                    messageDiv.style.borderRadius = '8px';
+                                    messageDiv.style.boxShadow = 'var(--card-shadow)';
+                                    messageDiv.style.gridColumn = '1 / -1';
+                                    messageDiv.style.margin = '20px 0';
+                                    
+                                    const messageText = document.createElement('p');
+                                    messageText.style.color = '#666';
+                                    messageText.style.fontSize = '16px';
+                                    messageText.textContent = 'No products match your search.';
+                                    
+                                    messageDiv.appendChild(messageText);
+                                    const editProductsGrid = getElement('edit-products-grid');
+                                    if (editProductsGrid) {
+                                        editProductsGrid.appendChild(messageDiv);
+                                    }
+                                } else {
+                                    noResultsMessage.style.display = 'block';
+                                }
+                            } else if (noResultsMessage) {
+                                // Hide the message if there are visible products
+                                noResultsMessage.style.display = 'none';
+                            }
+                        }
+                        
+                        // Set up edit products search
+                        const editProductsSearch = getElement('edit-products-search');
+                        if (editProductsSearch) {
+                            editProductsSearch.addEventListener('input', filterEditProducts);
+                        }
+                        
+                        // Price search functionality
+                        const priceSearchInput = getElement('price-search-input');
+                        if (priceSearchInput) {
+                            priceSearchInput.addEventListener('input', function() {
+                                const searchText = this.value.toLowerCase();
+                                const priceRows = document.querySelectorAll('.price-row');
+                                
+                                priceRows.forEach(row => {
+                                    const productName = row.querySelector('td:first-child span').textContent.toLowerCase();
+                                    const category = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
+                                    
+                                    if (productName.includes(searchText) || category.includes(searchText)) {
+                                        row.style.display = '';
+                                    } else {
+                                        row.style.display = 'none';
+                                    }
+                                });
+                            });
+                        }
+                        
+                        // Handle delete product buttons
+                        document.addEventListener('click', function(e) {
+                            if (e.target.closest('.delete-product-btn') || e.target.closest('.delete-btn')) {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                
+                                const deleteBtn = e.target.closest('.delete-product-btn') || e.target.closest('.delete-btn');
+                                const productId = deleteBtn.getAttribute('data-product-id');
+                                const productName = deleteBtn.getAttribute('data-product-name');
+                                
+                                // Update confirmation message with product name
+                                const confirmationMessage = getElement('confirmation-message');
+                                if (confirmationMessage) {
+                                    confirmationMessage.textContent = `Are you sure you want to delete "${productName}"?`;
+                                }
+                                
+                                // Set product ID for delete confirmation
+                                const confirmDeleteBtn = getElement('confirm-delete');
+                                if (confirmDeleteBtn) {
+                                    confirmDeleteBtn.setAttribute('data-product-id', productId);
+                                }
+                                
+                                // Show confirmation modal
+                                const confirmationModal = getElement('confirmation-modal');
+                                if (confirmationModal) {
+                                    confirmationModal.style.display = 'flex';
+                                }
+                            }
+                            
+                            // Handle accept order buttons
+                            if (e.target.closest('.accept-order-btn')) {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                
+                                const acceptBtn = e.target.closest('.accept-order-btn');
+                                const orderId = acceptBtn.getAttribute('data-order-id');
+                                const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value;
+                                
+                                if (!orderId || !csrfToken) {
+                                    console.error('Missing order ID or CSRF token');
+                                    return;
+                                }
+                                
+                                // Disable button to prevent multiple clicks
+                                acceptBtn.disabled = true;
+                                acceptBtn.textContent = 'Processing...';
+                                
+                                // Send request to accept_order API
+                                fetch(`/order/accept/${orderId}/`, {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'X-CSRFToken': csrfToken
+                                    }
+                                })
+                                .then(response => {
+                                    if (!response.ok) {
+                                        throw new Error('Network response was not ok');
+                                    }
+                                    return response.json();
+                                })
+                                .then(data => {
+                                    // Remove order card from DOM
+                                    const orderCard = getElement(`order-${orderId}`);
+                                    if (orderCard) {
+                                        orderCard.remove();
+                                    }
+                                    
+                                    // Show success notification
+                                    const notification = getElement('notification-container');
+                                    const message = getElement('notification-message');
+                                    
+                                    if (notification && message) {
+                                        message.textContent = data.message || 'Order accepted successfully!';
+                                        notification.style.display = 'block';
+                                        
+                                        // Hide notification after 3 seconds
+                                        setTimeout(() => {
+                                            notification.style.display = 'none';
+                                        }, 3000);
+                                    }
+                                    
+                                    // Check if there are no more orders
+                                    const remainingOrders = document.querySelectorAll('#pending-orders-container .order-card');
+                                    if (remainingOrders.length === 0) {
+                                        const ordersContent = document.querySelector('#pending-orders-container .orders-content');
+                                        if (ordersContent) {
+                                            ordersContent.innerHTML = `
+                                                <div style="text-align: center; padding: 40px 20px;">
+                                                    <i class="fas fa-clipboard-check" style="font-size: 48px; color: #3498db; margin-bottom: 20px;"></i>
+                                                    <p style="font-size: 18px; color: #666;">No pending orders at the moment.</p>
+                                                </div>
+                                            `;
+                                        }
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('Error:', error);
+                                    
+                                    // Reset button
+                                    acceptBtn.disabled = false;
+                                    acceptBtn.textContent = 'Accept Order';
+                                    
+                                    // Show error notification
+                                    const notification = getElement('notification-container');
+                                    const message = getElement('notification-message');
+                                    
+                                    if (notification && message) {
+                                        message.textContent = 'Error accepting order. Please try again.';
+                                        notification.style.backgroundColor = '#e74c3c';
+                                        notification.style.display = 'block';
+                                        
+                                        // Hide notification after 3 seconds
+                                        setTimeout(() => {
+                                            notification.style.display = 'none';
+                                            notification.style.backgroundColor = '#4CAF50';
+                                        }, 3000);
+                                    }
+                                });
+                            }
+                        });
+
+                        // Handle confirmation modal buttons
+                        const cancelDeleteBtn = getElement('cancel-delete');
+                        const confirmDeleteBtn = getElement('confirm-delete');
+                        const confirmationModal = getElement('confirmation-modal');
+                        
+                        if (cancelDeleteBtn && confirmationModal) {
+                            cancelDeleteBtn.addEventListener('click', function() {
+                                confirmationModal.style.display = 'none';
+                            });
+                        }
+                        
+                        if (confirmDeleteBtn && confirmationModal) {
+                            confirmDeleteBtn.addEventListener('click', function() {
+                                const productId = this.getAttribute('data-product-id');
+                                const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value;
+                                
+                                if (!productId || !csrfToken) {
+                                    console.error('Missing product ID or CSRF token');
+                                    return;
+                                }
+                                
+                                // Show loading state
+                                confirmDeleteBtn.textContent = 'Deleting...';
+                                confirmDeleteBtn.disabled = true;
+                                
+                                // Send delete request to delete_product API
+                                fetch(`/product/delete/${productId}/`, {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'X-CSRFToken': csrfToken
+                                    }
+                                })
+                                .then(response => {
+                                    if (!response.ok) {
+                                        throw new Error('Network response was not ok');
+                                    }
+                                    return response.json();
+                                })
+                                .then(data => {
+                                    // Hide modal
+                                    confirmationModal.style.display = 'none';
+                                    
+                                    // Remove product from DOM
+                                    const productCard = getElement(`product-card-${productId}`);
+                                    const editProductCard = getElement(`edit-product-card-${productId}`);
+                                    
+                                    if (productCard) {
+                                        productCard.remove();
+                                    }
+                                    
+                                    if (editProductCard) {
+                                        editProductCard.remove();
+                                    }
+                                    
+                                    // Show success notification
+                                    const deleteNotification = getElement('delete-notification');
+                                    const deleteMessage = getElement('delete-message');
+                                    
+                                    if (deleteNotification && deleteMessage) {
+                                        deleteMessage.textContent = data.message || 'Product deleted successfully!';
+                                        deleteNotification.style.display = 'block';
+                                        
+                                        // Hide notification after 3 seconds
+                                        setTimeout(() => {
+                                            deleteNotification.style.display = 'none';
+                                        }, 3000);
+                                    }
+                                    
+                                    // Reset button state
+                                    confirmDeleteBtn.textContent = 'Delete';
+                                    confirmDeleteBtn.disabled = false;
+                                })
+                                .catch(error => {
+                                    console.error('Error:', error);
+                                    
+                                    // Reset button state
+                                    confirmDeleteBtn.textContent = 'Delete';
+                                    confirmDeleteBtn.disabled = false;
+                                    
+                                    // Hide modal
+                                    confirmationModal.style.display = 'none';
+                                    
+                                    // Show error notification
+                                    const deleteNotification = getElement('delete-notification');
+                                    const deleteMessage = getElement('delete-message');
+                                    
+                                    if (deleteNotification && deleteMessage) {
+                                        deleteMessage.textContent = 'Error deleting product. Please try again.';
+                                        deleteNotification.style.backgroundColor = '#e74c3c';
+                                        deleteNotification.style.display = 'block';
+                                        
+                                        // Hide notification after 3 seconds
+                                        setTimeout(() => {
+                                            deleteNotification.style.display = 'none';
+                                            deleteNotification.style.backgroundColor = '#4CAF50';
+                                        }, 3000);
+                                    }
+                                });
+                            });
+                        }
+                    });
+
+                    function previewImage(input) {
+                        var preview = document.getElementById('preview');
+                        if (input.files && input.files[0]) {
+                            var reader = new FileReader();
+                            reader.onload = function(e) {
+                                preview.src = e.target.result;
+                                preview.style.display = 'block';
+                            }
+                            reader.readAsDataURL(input.files[0]);
+                        }
+                    }
+
+                    // Handle Add Product form submission via AJAX
+                    document.addEventListener('DOMContentLoaded', function() {
+                        const addProductForm = document.getElementById('add-product-form');
+                        const addProductNotification = document.getElementById('add-product-notification');
+                        const addProductMessage = document.getElementById('add-product-message');
+                        
+                        if (addProductForm) {
+                            addProductForm.addEventListener('submit', function(e) {
+                                e.preventDefault();
+                                
+                                const formData = new FormData(this);
+                                const submitButton = addProductForm.querySelector('button[type="submit"]');
+                                
+                                // Disable submit button and show loading state
+                                if (submitButton) {
+                                    submitButton.disabled = true;
+                                    submitButton.textContent = 'Adding...';
+                                }
+                                
+                                fetch('{% url "add_products" %}', {
+                                    method: 'POST',
+                                    body: formData,
+                                    // No need to set Content-Type header with FormData
+                                })
+                                .then(response => {
+                                    if (!response.ok) {
+                                        throw new Error('Network response was not ok');
+                                    }
+                                    return response.json();
+                                })
+                                .then(data => {
+                                    // Show success notification
+                                    if (addProductNotification && addProductMessage) {
+                                        addProductMessage.textContent = 'Product added successfully!';
+                                        addProductNotification.style.display = 'block';
+                                        addProductNotification.style.backgroundColor = '#4CAF50';
+                                        
+                                        // Hide notification after 3 seconds
+                                        setTimeout(() => {
+                                            addProductNotification.style.display = 'none';
+                                        }, 3000);
+                                    }
+                                    
+                                    // Reset form
+                                    addProductForm.reset();
+                                    
+                                    // Hide preview image
+                                    const preview = document.getElementById('preview');
+                                    if (preview) {
+                                        preview.style.display = 'none';
+                                        preview.src = '';
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('Error:', error);
+                                    
+                                    // Show error notification
+                                    if (addProductNotification && addProductMessage) {
+                                        addProductMessage.textContent = 'Failed to add product. Please try again.';
+                                        addProductNotification.style.display = 'block';
+                                        addProductNotification.style.backgroundColor = '#e74c3c';
+                                        
+                                        // Hide notification after 3 seconds
+                                        setTimeout(() => {
+                                            addProductNotification.style.display = 'none';
+                                        }, 3000);
+                                    }
+                                })
+                                .finally(() => {
+                                    // Re-enable submit button
+                                    if (submitButton) {
+                                        submitButton.disabled = false;
+                                        submitButton.textContent = 'Add Product';
+                                    }
+                                });
+                            });
+                        }
+                        
+                        // Handle Add Stock form submission via AJAX
+                        const addStockForm = document.getElementById('add-stock-form');
+                        const addStockNotification = document.getElementById('add-stock-notification');
+                        const addStockMessage = document.getElementById('add-stock-message');
+                        
+                        if (addStockForm) {
+                            addStockForm.addEventListener('submit', function(e) {
+                                e.preventDefault();
+                                
+                                const formData = new FormData(this);
+                                const submitButton = addStockForm.querySelector('button[type="submit"]');
+                                
+                                // Disable submit button and show loading state
+                                if (submitButton) {
+                                    submitButton.disabled = true;
+                                    submitButton.textContent = 'Processing...';
+                                }
+                                
+                                fetch('{% url "add_stock" %}', {
+                                    method: 'POST',
+                                    body: formData,
+                                    headers: {
+                                        'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+                                    }
+                                })
+                                .then(response => {
+                                    if (!response.ok) {
+                                        throw new Error('Network response was not ok');
+                                    }
+                                    return response.json();
+                                })
+                                .then(data => {
+                                    // Show success notification
+                                    if (addStockNotification && addStockMessage) {
+                                        addStockMessage.textContent = 'Stock added successfully!';
+                                        addStockNotification.style.display = 'block';
+                                        
+                                        // Hide notification after 3 seconds
+                                        setTimeout(() => {
+                                            addStockNotification.style.display = 'none';
+                                        }, 3000);
+                                    }
+                                    
+                                    // Reset form
+                                    addStockForm.reset();
+                                })
+                                .catch(error => {
+                                    console.error('Error:', error);
+                                    
+                                    // Show error notification
+                                    if (addStockNotification && addStockMessage) {
+                                        addStockMessage.textContent = 'Failed to add stock. Please try again.';
+                                        addStockNotification.style.display = 'block';
+                                        addStockNotification.style.backgroundColor = '#e74c3c';
+                                        
+                                        // Hide notification after 3 seconds
+                                        setTimeout(() => {
+                                            addStockNotification.style.display = 'none';
+                                        }, 3000);
+                                    }
+                                })
+                                .finally(() => {
+                                    // Re-enable submit button
+                                    if (submitButton) {
+                                        submitButton.disabled = false;
+                                        submitButton.textContent = 'Add Stock';
+                                    }
+                                });
+                            });
+                        }
+                        
+                        // Handle Decrease Stock form submission via AJAX
+                        const decreaseStockForm = document.getElementById('decrease-stock-form');
+                        const decreaseStockNotification = document.getElementById('decrease-stock-notification');
+                        const decreaseStockMessage = document.getElementById('decrease-stock-message');
+                        
+                        if (decreaseStockForm) {
+                            decreaseStockForm.addEventListener('submit', function(e) {
+                                e.preventDefault();
+                                
+                                const formData = new FormData(this);
+                                const submitButton = decreaseStockForm.querySelector('button[type="submit"]');
+                                
+                                // Disable submit button and show loading state
+                                if (submitButton) {
+                                    submitButton.disabled = true;
+                                    submitButton.textContent = 'Processing...';
+                                }
+                                
+                                fetch('{% url "decrease_stock" %}', {
+                                    method: 'POST',
+                                    body: formData,
+                                    headers: {
+                                        'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+                                    }
+                                })
+                                .then(response => {
+                                    if (!response.ok) {
+                                        throw new Error('Network response was not ok');
+                                    }
+                                    return response.json();
+                                })
+                                .then(data => {
+                                    // Show success notification
+                                    if (decreaseStockNotification && decreaseStockMessage) {
+                                        decreaseStockMessage.textContent = 'Stock decreased successfully!';
+                                        decreaseStockNotification.style.display = 'block';
+                                        
+                                        // Hide notification after 3 seconds
+                                        setTimeout(() => {
+                                            decreaseStockNotification.style.display = 'none';
+                                        }, 3000);
+                                    }
+                                    
+                                    // Reset form
+                                    decreaseStockForm.reset();
+                                    
+                                    // Hide product image if displayed
+                                    const productImageContainer = document.getElementById('product-image-container');
+                                    if (productImageContainer) {
+                                        productImageContainer.style.display = 'none';
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('Error:', error);
+                                    
+                                    // Show error notification
+                                    if (decreaseStockNotification && decreaseStockMessage) {
+                                        decreaseStockMessage.textContent = 'Failed to decrease stock. Please try again.';
+                                        decreaseStockNotification.style.display = 'block';
+                                        decreaseStockNotification.style.backgroundColor = '#e74c3c';
+                                        
+                                        // Hide notification after 3 seconds
+                                        setTimeout(() => {
+                                            decreaseStockNotification.style.display = 'none';
+                                        }, 3000);
+                                    }
+                                })
+                                .finally(() => {
+                                    // Re-enable submit button
+                                    if (submitButton) {
+                                        submitButton.disabled = false;
+                                        submitButton.textContent = 'Decrease Stock';
+                                    }
+                                });
+                            });
+                            
+                            // Handle product selection to display product image
+                            const decreaseProductSelect = document.getElementById('decrease-product');
+                            if (decreaseProductSelect) {
+                                decreaseProductSelect.addEventListener('change', function() {
+                                    const productId = this.value;
+                                    const productImageContainer = document.getElementById('product-image-container');
+                                    const productImage = document.getElementById('product-image');
+                                    
+                                    if (!productId || !productImageContainer || !productImage) {
+                                        if (productImageContainer) {
+                                            productImageContainer.style.display = 'none';
+                                        }
+                                        return;
+                                    }
+                                    
+                                    // Fetch product image URL
+                                    fetch(`/product/get-product-image/${productId}/`, {
+                                        method: 'GET',
+                                        headers: {
+                                            'Content-Type': 'application/json'
+                                        }
+                                    })
+                                    .then(response => {
+                                        if (!response.ok) {
+                                            throw new Error('Network response was not ok');
+                                        }
+                                        return response.json();
+                                    })
+                                    .then(data => {
+                                        if (data.image_url) {
+                                            productImage.src = data.image_url;
+                                            productImageContainer.style.display = 'block';
+                                        } else {
+                                            productImageContainer.style.display = 'none';
+                                        }
+                                    })
+                                    .catch(error => {
+                                        console.error('Error fetching product image:', error);
+                                        productImageContainer.style.display = 'none';
+                                    });
+                                });
+                            }
+                        }
+                    });
+                </script>
+            </div>
+            <div class="header-actions">
+                <a href="{% url 'store' %}" class="btn">Get Back To Store</a>
+            </div>
+        </div>
+
+        <div class="products-grid">
+            {% csrf_token %}
+            {% if products %}
+                {% for product in products %}
+                    <div class="product-card" id="product-card-{{ product.id }}">
+                        <a href="{% url 'product_edit' product.id %}" style="text-decoration: none; color: inherit;">
+                            {% if product.image %}
+                                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
+                            {% endif %}
+                            <div class="product-details">
+                                <h3 class="product-name" style="color: black;">{{ product.name|title }}</h3>
+                                <div class="product-category" style="color: black;">{{ product.category.name|title }}</div>
+                                {% comment %} <div class="product-price">${{ product.price }}</div> {% endcomment %}
+                                <div class="product-stock" style="font-size: 1.2rem; padding: 8px 0; margin-top: 5px;">
+                                    <span class="stock-indicator" style="display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 8px;"></span>
+                                    <strong style="color: black;">Stock: <span >{{ product.get_stock_quantity }}</span> Units</strong>
+                                </div>
+                            </a>
+                                <div class="product-action" style="margin-top: 10px;">
+                                    <button class="delete-btn" data-product-id="{{ product.id }}" data-product-name="{{ product.name }}" style="background-color: #ff4d4d; color: white; border: none; border-radius: 4px; padding: 8px 16px; cursor: pointer; font-weight: bold;">Delete</button>
+                                </div>
+                            </div>
+                        <i class="fas fa-heart wishlist-icon" 
+                           data-product-id="{{ product.id }}"
+                           style="position: absolute; top: 10px; right: 10px; cursor: pointer; font-size: 20px; color: {% if product in request.user.wishlist_products.all %}#ff4d4d{% else %}#000{% endif %};">
+                        </i>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="no-products">
+                    <p>No products available.</p>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Add Product Form Container -->
+        <div id="add-product-container" style="display: none; background: white; border-radius: 8px; box-shadow: var(--card-shadow); padding: 20px; margin-top: 20px;">
+            <div class="page-header">
+                <h1 class="page-title" style="color: #3498db; font-size: 2rem; font-weight: 700; text-align: center;">Add New Product</h1>
+                <p class="page-description" style="color: #3498db; font-size: 20px; font-weight: 700; text-align: center;">Fill in the product details below</p>
+            </div>
+
+            <div id="add-product-notification" style="display: none; padding: 10px; margin: 10px 0; border-radius: 5px; text-align: center; background-color: #4CAF50; color: white;">
+                <span id="add-product-message">Product added successfully!</span>
+            </div>
+
+            <div class="form-container">
+                <form method="POST" action="{% url 'add_products' %}" enctype="multipart/form-data" id="add-product-form">
+                    {% csrf_token %}
+                    
+                    <div class="form-section">
+                        <h2 class="section-title" style="color: #3498db; font-size: 20px; font-weight: 700;">Basic Information</h2>
+                        <div class="form-row" style="display: flex; gap: 20px; flex-wrap;">
+                            <div class="form-group" style="flex: 1; min-width: 200px;">
+                                <label for="name" style="color: #3498db; font-size: 20px; display: block; margin-bottom: 5px;">Product Name</label>
+                                <input type="text" id="name" name="name" required placeholder="Enter product name" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                            </div>
+                            <div class="form-group" style="flex: 1; min-width: 200px;">
+                                <label for="price" style="color: #3498db; font-size: 20px; display: block; margin-bottom: 5px;">Price</label>
+                                <input type="number" id="price" name="price" step="0.01" required placeholder="0.00" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                            </div>
+                        </div>
+                        <div class="form-row" style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 15px;">
+                            <div class="form-group" style="flex: 1; min-width: 200px;">
+                                <label for="weight" style="color: #3498db; font-size: 20px; display: block; margin-bottom: 5px;">Weight</label>
+                                <input type="number" id="weight" name="weight" step="0.01" required placeholder="0.00 Kg" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                            </div>
+                            <div class="form-group" style="flex: 1; min-width: 200px;">
+                                <label for="volume" style="color: #3498db; font-size: 20px; display: block; margin-bottom: 5px;">Volume</label>
+                                <input type="number" id="volume" name="volume" step="0.01" required placeholder="0.00 Litres" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin-top: 15px;">
+                            <label for="description" style="color: #3498db; font-size: 20px; display: block; margin-bottom: 5px;">Description</label>
+                            <textarea id="description" name="description" placeholder="Enter product description" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; min-height: 100px;"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-section" style="margin-top: 20px;">
+                        <h2 class="section-title" style="color: #3498db; font-size: 20px; font-weight: 700;">Inventory Details</h2>
+                        <div class="form-row" style="display: flex; gap: 20px; flex-wrap;">
+                            <div class="form-group" style="flex: 1; min-width: 200px;">
+                                <label for="stock" style="color: #3498db; font-size: 20px; display: block; margin-bottom: 5px;">Stock Quantity</label>
+                                <input type="number" id="stock" name="stock" required placeholder="Enter quantity" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                            </div>
+                            <div class="form-group" style="flex: 1; min-width: 200px;">
+                                <label for="supplier" style="color: #3498db; font-size: 20px; display: block; margin-bottom: 5px;">Supplier</label>
+                                <input type="text" id="supplier" name="supplier" placeholder="Enter supplier name" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                            </div>
+                        </div>
+                        <div class="form-row" style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 15px;">
+                            <div class="form-group" style="flex: 1; min-width: 200px;">
+                                <label for="category" style="color: #3498db; font-size: 20px; display: block; margin-bottom: 5px;">Category</label>
+                                <select id="category" name="category" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                                    <option value="">Select a category</option>
+                                    {% for category in categories %}
+                                        <option value="{{ category }}">{{ category.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group" style="flex: 1; min-width: 200px;">
+                                <label for="shelf_life" style="color: #3498db; font-size: 20px; display: block; margin-bottom: 5px;">Shelf Life</label>
+                                <select id="shelf_life" name="shelf_life" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                                    <option value="">Select shelf life</option>
+                                    <option value="p">Perishable</option>
+                                    <option value="n">Non-Perishable</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section" style="margin-top: 20px;">
+                        <h2 class="section-title" style="color: #3498db; font-size: 20px; font-weight: 700;">Product Image</h2>
+                        <div class="form-group">
+                            <label for="product_image" style="color: #3498db; font-size: 20px; display: block; margin-bottom: 5px;">Upload Image</label>
+                            <input type="file" id="product_image" name="product_image" accept="image/*" required onchange="previewImage(this);" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                            <img src="" id="preview" alt="Preview" class="image-preview" style="max-width: 200px; max-height: 200px; margin-top: 10px; display: none;">
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 20px; text-align: center;">
+                        <button type="submit" class="submit-button" style="background-color: #3498db; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 16px;">Add Product</button>
+                        <button type="button" id="cancel-add-product" style="background-color: #e74c3c; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 16px; margin-left: 10px;">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Add Stock Form Container -->
+        <div id="add-stock-container" style="display: none; background: white; border-radius: 8px; box-shadow: var(--card-shadow); padding: 20px; margin-top: 20px;">
+            <div class="page-header">
+                <h2 style="text-align: center;color: #3498db; font-size: 2rem; font-weight: 700;">Add Stock</h2>
+            </div>
+            
+            <div id="add-stock-notification" style="display: none; padding: 10px; margin: 10px 0; border-radius: 5px; text-align: center; background-color: #4CAF50; color: white;">
+                <span id="add-stock-message">Stock added successfully!</span>
+            </div>
+            
+            <div class="form-content">
+                <form method="POST" action="{% url 'add_stock' %}" id="add-stock-form">
+                    {% csrf_token %}
+                    <div class="form-group" style="margin-bottom: 20px;">
+                        <label for="product" style="color: #3498db; font-size: 20px; display: block; margin-bottom: 10px;">Select Product:</label>
+                        <select name="product" id="product" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+                            <option value="">Choose a product...</option>
+                            {% for product in products %}
+                                <option value="{{ product.id }}">{{ product.name }} (Current Stock: {{ product.get_stock_quantity }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 20px;">
+                        <label for="quantity" style="color: #3498db; font-size: 20px; display: block; margin-bottom: 10px;">Quantity to Add:</label>
+                        <input type="number" name="stock" id="quantity" min="1" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 20px;">
+                        <label for="supplier" style="color: #3498db; font-size: 20px; display: block; margin-bottom: 10px;">Supplier:</label>
+                        <input type="text" name="supplier" id="supplier" placeholder="Enter supplier name" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+                    </div>
+
+                    <div class="form-actions" style="text-align: center; margin-top: 30px;">
+                        <button type="submit" class="btn btn-primary" style="background-color: #3498db; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 16px;">Add Stock</button>
+                        <button type="button" id="cancel-add-stock" style="background-color: #e74c3c; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 16px; margin-left: 10px;">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Decrease Stock Form Container -->
+        <div id="decrease-stock-container" style="display: none; background: white; border-radius: 8px; box-shadow: var(--card-shadow); padding: 20px; margin-top: 20px;">
+            <div class="page-header">
+                <h2 style="text-align: center;color: #3498db; font-size: 2rem; font-weight: 700;">Decrease Stock</h2>
+            </div>
+            
+            <div id="decrease-stock-notification" style="display: none; padding: 10px; margin: 10px 0; border-radius: 5px; text-align: center; background-color: #4CAF50; color: white;">
+                <span id="decrease-stock-message">Stock decreased successfully!</span>
+            </div>
+            
+            <div class="form-content">
+                <form method="POST" action="{% url 'decrease_stock' %}" id="decrease-stock-form">
+                    {% csrf_token %}
+                    <div class="form-group" style="margin-bottom: 20px;">
+                        <div id="product-image-container" class="product-image-container" style="text-align: center; margin-bottom: 20px; display: none;">
+                            <img id="product-image" src="" alt="Product Image" style="max-width: 200px; max-height: 200px; border-radius: 4px;">
+                        </div>
+                        <label for="decrease-product" style="color: #3498db; font-size: 20px; display: block; margin-bottom: 10px;">Select Product:</label>
+                        <select name="product" id="decrease-product" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+                            <option value="">Choose a product...</option>
+                            {% for product in products %}
+                                <option value="{{ product.id }}">{{ product.name }} (Current Stock: {{ product.get_stock_quantity }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 20px;">
+                        <label for="decrease-quantity" style="color: #3498db; font-size: 20px; display: block; margin-bottom: 10px;">Quantity to Decrease:</label>
+                        <input type="number" name="quantity" id="decrease-quantity" min="1" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+                    </div>
+
+                    <div class="form-actions" style="text-align: center; margin-top: 30px;">
+                        <button type="submit" class="btn btn-primary" style="background-color: #3498db; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 16px;">Decrease Stock</button>
+                        <button type="button" id="cancel-decrease-stock" style="background-color: #e74c3c; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 16px; margin-left: 10px;">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Pending Orders Container -->
+        <div id="pending-orders-container" style="display: none; background: white; border-radius: 8px; box-shadow: var(--card-shadow); padding: 20px; margin-top: 20px;">
+            <div class="page-header">
+                <h2 style="text-align: center;color: #3498db; font-size: 2rem; font-weight: 700;">Pending Orders</h2>
+            </div>
+            
+            <div id="notification-container" style="display: none; padding: 10px; margin: 10px 0; border-radius: 5px; text-align: center; background-color: #4CAF50; color: white;">
+                <span id="notification-message">Order accepted successfully!</span>
+            </div>
+            
+            <div class="orders-content">
+                {% csrf_token %}
+                {% if pending_orders %}
+                    <div class="orders-list" style="margin-top: 20px;">
+                        {% for order in pending_orders %}
+                            <div class="order-card" id="order-{{ order.id }}" style="border: 1px solid #e1e4e8; border-radius: 8px; padding: 15px; margin-bottom: 15px; background-color: #f9f9f9;">
+                                <div class="order-header" style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                                    <div class="order-info">
+                                        <h3 style="margin: 0; color: #333; font-size: 18px;">Order #{{ order.id }}</h3>
+                                        <p style="margin: 5px 0; color: #666;">{{ order.order_date|date:"F d, Y H:i" }}</p>
+                                        <p style="margin: 5px 0; color: #666;">Customer: {{ order.customer }}</p>
+                                    </div>
+                                    <div class="order-total">
+                                        <p style="margin: 0; font-weight: bold; font-size: 18px; color: #2ecc71;">Total: ${{ order.order_price|floatformat:2 }}</p>
+                                        <span class="status-badge" style="display: inline-block; padding: 5px 10px; border-radius: 20px; background-color: #f39c12; color: white; font-size: 14px;">{{ order.status|title }}</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="order-items" style="margin: 15px 0; border-top: 1px solid #e1e4e8; padding-top: 15px;">
+                                    <h4 style="margin: 0 0 10px 0; color: #333;">Order Items:</h4>
+                                    <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                                        {% for item in order.products %}
+                                            <div class="order-item" style="display: flex; align-items: center; padding: 10px; background: white; border-radius: 5px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); flex: 1; min-width: 300px;">
+                                                <div class="item-image" style="width: 60px; height: 60px; margin-right: 15px;">
+                                                    <img src="{{ item.product_image }}" alt="{{ item.product_name }}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 5px;">
+                                                </div>
+                                                <div class="item-details" style="flex: 1;">
+                                                    <p style="margin: 0; font-weight: bold; color: #333;">{{ item.product_name }}</p>
+                                                    <p style="margin: 5px 0; color: #666;">Quantity: {{ item.quantity }}</p>
+                                                </div>
+                                                <div class="item-price" style="text-align: right;">
+                                                    <p style="margin: 0; font-weight: bold; color: #2ecc71;">${{ item.order_price|floatformat:2 }}</p>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                
+                                <div class="order-actions" style="text-align: right; margin-top: 15px;">
+                                    <button class="accept-order-btn" data-order-id="{{ order.id }}" style="background-color: #2ecc71; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 16px;">
+                                        Accept Order
+                                    </button>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div style="text-align: center; padding: 40px 20px;">
+                        <i class="fas fa-clipboard-check" style="font-size: 48px; color: #3498db; margin-bottom: 20px;"></i>
+                        <p style="font-size: 18px; color: #666;">No pending orders at the moment.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Price Update Notification -->
+        <div id="price-update-notification" style="display: none; position: fixed; bottom: 20px; right: 20px; padding: 15px 20px; background-color: #4CAF50; color: white; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); z-index: 1000;">
+            <span id="price-update-message">Price updated successfully!</span>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmation-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
+        <div style="background-color: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); max-width: 400px; width: 100%;">
+            <h3 style="margin-top: 0; color: #3498db;">Confirm Deletion</h3>
+            <p id="confirmation-message" style="margin-bottom: 20px;">Are you sure you want to delete this product?</p>
+            <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                <button id="cancel-delete" style="background-color: #95a5a6; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">Cancel</button>
+                <button id="confirm-delete" style="background-color: #ff4d4d; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Notification -->
+    <div id="delete-notification" style="display: none; position: fixed; bottom: 20px; right: 20px; padding: 15px 20px; background-color: #4CAF50; color: white; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); z-index: 1000;">
+        <span id="delete-message">Product deleted successfully!</span>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Helper function to get DOM elements with null checks
+            function getElement(id) {
+                return document.getElementById(id) || null;
+            }
+            
+            // Navigation links and their corresponding containers
+            const navConfig = [
+                { linkId: 'track-stock-link', containerId: null, displayType: null, isDefault: true },
+                { linkId: 'product-complaints-link', containerId: 'product-complaints-container', displayType: 'block' },
+                { linkId: 'monitor-prices-link', containerId: 'monitor-prices-container', displayType: 'block' },
+                { linkId: 'pending-orders-link', containerId: 'pending-orders-container', displayType: 'block' },
+                { linkId: 'add-product-link', containerId: 'add-product-container', displayType: 'block' },
+                { linkId: 'add-stock-link', containerId: 'add-stock-container', displayType: 'block' },
+                { linkId: 'decrease-stock-link', containerId: 'decrease-stock-container', displayType: 'block' },
+                { linkId: 'new-products-link', containerId: 'new-products-container', displayType: 'block', isDefaultForEmployee: true },
+                { linkId: 'edit-product-link', containerId: 'edit-products-container', displayType: 'block' },
+                { linkId: 'technical-complaints-link', containerId: 'technical-complaints-container', displayType: 'block' }
+            ];
+            
+            // Get all navigation elements and containers
+            const navElements = {};
+            const containers = {
+                productsGrid: document.querySelector('.products-grid'),
+                searchContainer: getElement('search-container')
+            };
+            
+            // Initialize navigation elements and containers
+            navConfig.forEach(item => {
+                navElements[item.linkId] = getElement(item.linkId);
+                if (item.containerId) {
+                    containers[item.containerId] = getElement(item.containerId);
+                }
+            });
+            
+            // Cancel buttons for forms
+            const cancelButtons = {
+                'cancel-add-product': 'track-stock-link',
+                'cancel-add-stock': 'track-stock-link',
+                'cancel-decrease-stock': 'track-stock-link'
+            };
+            
+            // Function to hide all containers
+            function hideAllContainers() {
+                // Hide products grid and search container
+                if (containers.productsGrid) containers.productsGrid.style.display = 'none';
+                if (containers.searchContainer) containers.searchContainer.style.display = 'none';
+                
+                // Hide all other containers
+                Object.keys(containers).forEach(key => {
+                    if (key !== 'productsGrid' && key !== 'searchContainer' && containers[key]) {
+                        containers[key].style.display = 'none';
+                    }
+                });
+            }
+            
+            // Function to reset active nav links
+            function resetActiveLinks() {
+                document.querySelectorAll('.nav-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+            }
+            
+            // Function to activate a specific navigation item
+            function activateNavItem(linkId) {
+                hideAllContainers();
+                resetActiveLinks();
+                
+                const navItem = navConfig.find(item => item.linkId === linkId);
+                if (!navItem) return;
+                
+                // For Track Stock Level, show products grid and search
+                if (linkId === 'track-stock-link') {
+                    if (containers.productsGrid) containers.productsGrid.style.display = 'grid';
+                    if (containers.searchContainer) containers.searchContainer.style.display = 'flex';
+                    
+                    if (containers.productsGrid) {
+                        containers.productsGrid.scrollIntoView({ behavior: 'smooth' });
+                    }
+                } 
+                // For other navigation items, show their specific container
+                else if (navItem.containerId && containers[navItem.containerId]) {
+                    containers[navItem.containerId].style.display = navItem.displayType || 'block';
+                    
+                    if (containers[navItem.containerId]) {
+                        containers[navItem.containerId].scrollIntoView({ behavior: 'smooth' });
+                    }
+                }
+                
+                // Highlight the active link
+                if (navElements[linkId]) {
+                    navElements[linkId].classList.add('active');
+                }
+            }
+            
+            // Set up click handlers for all navigation links
+            Object.keys(navElements).forEach(linkId => {
+                const link = navElements[linkId];
+                if (link) {
+                    link.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        activateNavItem(linkId);
+                    });
+                }
+            });
+            
+            // Set up cancel buttons
+            Object.keys(cancelButtons).forEach(buttonId => {
+                const button = getElement(buttonId);
+                if (button) {
+                    button.addEventListener('click', function() {
+                        activateNavItem(cancelButtons[buttonId]);
+                    });
+                }
+            });
+            
+            // Initialize the page - show default content based on user role
+            hideAllContainers();
+            
+            // Check if user is an employee
+            const isEmployee = {% if user.user_role == 'employee' %}true{% else %}false{% endif %};
+            
+            if (isEmployee && navElements['new-products-link'] && containers['new-products-container']) {
+                // For employees, show new products by default
+                activateNavItem('new-products-link');
+            } else {
+                // For other roles, show products grid by default
+                activateNavItem('track-stock-link');
+            }
+            
+            // Function to filter products in the main products grid
+            function filterProducts() {
+                const searchInput = getElement('searchInput');
+                if (!searchInput) return;
+                
+                const searchText = searchInput.value.toLowerCase();
+                const productCards = document.querySelectorAll('.product-card');
+                
+                productCards.forEach(card => {
+                    const productName = card.querySelector('.product-name').textContent.toLowerCase();
+                    const productCategory = card.querySelector('.product-category').textContent.toLowerCase();
+                    
+                    if (productName.includes(searchText) || productCategory.includes(searchText)) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            }
+            
+            // Set up the main search functionality
+            const searchInput = getElement('searchInput');
+            if (searchInput) {
+                searchInput.addEventListener('input', filterProducts);
+            }
+            
+            // Function to add products to wishlist
+            function addToWishlist(event, productId) {
+                event.preventDefault();
+                event.stopPropagation();
+                
+                const wishlistIcon = event.target.closest('.wishlist-icon');
+                if (!wishlistIcon) return;
+                
+                const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value;
+                if (!csrfToken) {
+                    console.error('CSRF token not found');
+                    return;
+                }
+
+                fetch(`/product/wishlist/${productId}/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrfToken
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status) {
+                        wishlistIcon.style.color = '#ff4d4d';
+                    } else {
+                        wishlistIcon.style.color = '#000';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            }
+            
+            // Add global event listener for wishlist icons
+            document.addEventListener('click', function(e) {
+                if (e.target.closest('.wishlist-icon')) {
+                    const wishlistIcon = e.target.closest('.wishlist-icon');
+                    const productId = wishlistIcon.getAttribute('data-product-id');
+                    if (productId) {
+                        addToWishlist(e, productId);
+                    }
+                }
+            });
+
+            // Function to filter products in the edit products container
+            function filterEditProducts() {
+                const searchInput = getElement('edit-products-search');
+                if (!searchInput) return;
+                
+                const searchText = searchInput.value.toLowerCase();
+                const productCards = document.querySelectorAll('#edit-products-grid .product-card');
+                let visibleCount = 0;
+                
+                productCards.forEach(card => {
+                    const productName = card.querySelector('.product-name').textContent.toLowerCase();
+                    const productCategory = card.querySelector('.product-category').textContent.toLowerCase();
+                    
+                    if (productName.includes(searchText) || productCategory.includes(searchText)) {
+                        card.style.display = 'block';
+                        visibleCount++;
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+                
+                // Show "no results" message if all products are hidden
+                const noResultsMessage = getElement('no-search-results');
+                
+                if (visibleCount === 0 && searchText !== '') {
+                    // Create "no results" message if it doesn't exist
+                    if (!noResultsMessage) {
+                        const messageDiv = document.createElement('div');
+                        messageDiv.id = 'no-search-results';
+                        messageDiv.className = 'no-products';
+                        messageDiv.style.textAlign = 'center';
+                        messageDiv.style.padding = '40px';
+                        messageDiv.style.background = 'white';
+                        messageDiv.style.borderRadius = '8px';
+                        messageDiv.style.boxShadow = 'var(--card-shadow)';
+                        messageDiv.style.gridColumn = '1 / -1';
+                        messageDiv.style.margin = '20px 0';
+                        
+                        const messageText = document.createElement('p');
+                        messageText.style.color = '#666';
+                        messageText.style.fontSize = '16px';
+                        messageText.textContent = 'No products match your search.';
+                        
+                        messageDiv.appendChild(messageText);
+                        const editProductsGrid = getElement('edit-products-grid');
+                        if (editProductsGrid) {
+                            editProductsGrid.appendChild(messageDiv);
+                        }
+                    } else {
+                        noResultsMessage.style.display = 'block';
+                    }
+                } else if (noResultsMessage) {
+                    // Hide the message if there are visible products
+                    noResultsMessage.style.display = 'none';
+                }
+            }
+            
+            // Set up edit products search
+            const editProductsSearch = getElement('edit-products-search');
+            if (editProductsSearch) {
+                editProductsSearch.addEventListener('input', filterEditProducts);
+            }
+            
+            // Price search functionality
+            const priceSearchInput = getElement('price-search-input');
+            if (priceSearchInput) {
+                priceSearchInput.addEventListener('input', function() {
+                    const searchText = this.value.toLowerCase();
+                    const priceRows = document.querySelectorAll('.price-row');
+                    
+                    priceRows.forEach(row => {
+                        const productName = row.querySelector('td:first-child span').textContent.toLowerCase();
+                        const category = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
+                        
+                        if (productName.includes(searchText) || category.includes(searchText)) {
+                            row.style.display = '';
+                        } else {
+                            row.style.display = 'none';
+                        }
+                    });
+                });
+            }
+        });
+
+        function previewImage(input) {
+            var preview = document.getElementById('preview');
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+    </script>
+</body>
+</html>

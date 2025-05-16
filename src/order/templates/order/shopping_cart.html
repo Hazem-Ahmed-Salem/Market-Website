@@ -1,0 +1,335 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'user/css/all.css' %}" />
+    <link rel="stylesheet" href="{% static 'order/css/order.css' %}" />
+    <link rel="stylesheet" href="{% static 'user/css/style2.css' %}">
+    <style>
+        :root {
+            --primary-blue2: #1877f2;
+            --primary-blue: #3498db;
+            --light-blue: #e8f0fe;
+            --border-color: #e1e4e8;
+            --danger: #dc3545;
+            --white: #fff;
+            --dark-blue: #0d47a1;
+            --text-color: #333;
+            --bg-color: #f8f9fa;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            position: relative;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: var(--white);
+            border-radius: 10px;
+            box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+            overflow: hidden;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 30px;
+            background: var(--white);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 600;
+            color: var(--primary-blue);
+        }
+
+        .user-info {
+            font-size: 16px;
+            color: var(--text-color);
+        }
+
+        .cart-container {
+            padding: 30px;
+        }
+
+        .cart-item {
+            display: flex;
+            align-items: center;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            text-decoration: none;
+            color: var(--text-color);
+        }
+
+        .cart-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(24, 119, 242, 0.1);
+            border-color: var(--primary-blue);
+        }
+
+        .product-image {
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-right: 20px;
+        }
+
+        .item-details {
+            flex: 1;
+        }
+
+        .item-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-color);
+            margin-bottom: 8px;
+        }
+
+        .item-price {
+            font-size: 16px;
+            color: var(--primary-blue);
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        .item-quantity {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .order-date {
+            font-size: 12px;
+            color: #888;
+        }
+
+        .empty-cart {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+
+        .empty-cart i {
+            font-size: 48px;
+            color: var(--border-color);
+            margin-bottom: 20px;
+        }
+
+        .empty-cart p {
+            font-size: 18px;
+        }
+
+        .total-section {
+            margin-top: 30px;
+            padding: 20px;
+            background: var(--light-blue);
+            border-radius: 8px;
+            text-align: right;
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--primary-blue);
+        }
+
+        .delete-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .delete-btn:hover {
+            background-color: var(--light-blue);
+        }
+
+        .delete-btn svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 5px;
+            color: white;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transform: translateX(120%);
+            transition: transform 0.3s ease-in-out;
+            z-index: 1000;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.error {
+            background-color: var(--danger);
+        }
+
+        .notification i {
+            font-size: 18px;
+        }
+
+        .checkout-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-left: 24px;
+            padding: 12px 28px;
+            background: var(--primary-blue);
+            color: var(--white);
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            text-decoration: none;
+            box-shadow: 0 2px 8px rgba(24, 119, 242, 0.08);
+            transition: background 0.2s, color 0.2s, transform 0.15s;
+            cursor: pointer;
+        }
+        .checkout-btn i {
+            font-size: 18px;
+        }
+        .checkout-btn:hover {
+            background: var(--dark-blue);
+            color: var(--white);
+            transform: translateY(-2px) scale(1.03);
+        }
+    </style>
+</head>
+<body>
+    {% comment %} <header>
+        <div class="container">
+            <div class="logo">
+                <a href="{% url 'store' %}"><h1>ShopEasy</h1></a>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="{% url 'store' %}" class="active">Home</a></li>
+                    <li><a href="{% url 'featured_products' 'all' %}">Products</a></li>
+                    <li><a href="{% url 'complaint' %}">Complaint</a></li>
+                </ul>
+            </nav>
+            <div class="header-icons">
+                <a href="{% url 'shopping_cart' %}"><i class="fas fa-shopping-cart"></i> <span class="cart-count">0</span></a>
+                <a href="{% url 'wishlist_view' %}"><i class="fas fa-heart"></i></a>
+                <a href="{% url 'profile' %}" id="login-btn"><img src="{{ user.profile.profile_picture.url }}" alt="Profile Picture" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;"></a>
+            </div>
+        </div>
+    </header> {% endcomment %}
+    <div class="container">
+        <div class="header">
+            <h1 style="color: #3498db;">Shopping Cart</h1>
+            <h3 style="color: black; text-decoration: none; cursor: pointer;"><a style="text-decoration: none; color: black;" href="{% url 'store' %}">Back to Store</a></h4>
+            <div class="user-info" style="display: flex; align-items: center; gap: 10px;">
+                <h4 style="color: #3498db;">{{ user.first_name|title }} {{ user.last_name|title }}</h4>
+                <a href="{% url 'profile' %}" id="login-btn"><img src="{{ user.profile.profile_picture.url }}" alt="Profile Picture" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;"></a>
+            </div>
+        </div>
+
+        <div class="cart-container" style="display: flex; flex-direction: column; gap: 10px;">
+            {% csrf_token %}
+            {% if items %}
+                {% for item in items %}
+                    <a href="{% url 'product_view' item.product.id %}" class="cart-item">
+                        {% if item.product.image %}
+                            <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="product-image">
+                        {% endif %}
+                        <div class="item-details">
+                            <h3 class="item-name">{{ item.product.name|title }}</h3>
+                            <div class="item-price">${{ item.product.price }}</div>
+                            <div class="item-quantity">Quantity: {{ item.quantity }}</div>
+                            <div class="order-date">Ordered on: {{ item.created_at|date:"F d, Y" }}</div>
+                        </div>
+                        <button onclick="event.preventDefault(); removeFromCart({{ item.id }})" class="delete-btn">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </a>
+                {% endfor %}
+                <div class="total-section">
+                    Total: ${{ total_price }}
+                    <a href="{% url 'checkout' %}" class="checkout-btn" style="justify-content: center;">
+                        <i class="fas fa-shopping-cart"></i>
+                        Proceed to Checkout
+                    </a>
+                </div>
+            {% else %}
+                <div class="empty-cart"> 
+                    <i class="fas fa-shopping-cart"></i>
+                    <p>Your shopping cart is empty</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div id="notification" class="notification">
+        <i class="fas fa-info-circle"></i>
+        <span id="notification-message"></span>
+    </div>
+
+    <script>
+        function removeFromCart(orderId) {
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            const notification = document.getElementById('notification');
+            const message = document.getElementById('notification-message');
+            
+            fetch(`/order/remove_from_cart/${orderId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrfToken
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    location.reload();
+                } else {
+                    notification.className = 'notification error show';
+                    message.textContent = 'Failed to remove item from cart';
+                    setTimeout(() => notification.classList.remove('show'), 3000);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                notification.className = 'notification error show';
+                message.textContent = 'Failed to remove item from cart';
+                setTimeout(() => notification.classList.remove('show'), 3000);
+            });
+        }
+    </script>
+</body>
+</html>
