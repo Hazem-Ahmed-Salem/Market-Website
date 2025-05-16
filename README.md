@@ -113,7 +113,7 @@ python manage.py runserver
       <br />
       <span>Worked on:</span>
       <br />
-      <span>Frontend and backend dev</span>
+      <span>Frontend and backend development</span>
     </td>
     <td align="center">
       <a href="https://github.com/Ahmed482-21albadawy">
@@ -124,7 +124,7 @@ python manage.py runserver
       <br />
       <span>Worked on:</span>
       <br />
-      <span>Machine Learning dev</span>
+      <span>Machine Learning development</span>
     </td>
   </tr>
 </table>
