@@ -111,6 +111,7 @@ python manage.py runserver
         <sub><b>Hazem Ahmed Salem</b></sub>
       </a>
       <br />
+      <span>Worked on:</span>
       <br />
       <span>Frontend and backend dev</span>
     </td>
@@ -121,6 +122,7 @@ python manage.py runserver
         <sub><b>Ahmed Albadawy</b></sub>
       </a>
       <br />
+      <span>Worked on:</span>
       <br />
       <span>Machine Learning dev</span>
     </td>
