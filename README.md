@@ -1,6 +1,6 @@
 # 🛍️ Market Website  
-*A modern e-commerce platform with product browsing, cart functionality, user authentication, and  admin panel*
-
+* A modern e-commerce platform with product browsing, cart functionality, user authentication, and  admin panel 
+* It's not production ready
 ![Market Website Preview](https://via.placeholder.com/800x400?text=Market+Website+Homepage) *(Replace with actual screenshot)*  
 *(Consider adding screenshots of key pages like products, cart, and admin view)*
 
