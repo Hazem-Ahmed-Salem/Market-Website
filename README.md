@@ -44,8 +44,8 @@
 
 
 ## 📥 Installation Guide (Django)  
-### 1. Prerequisites  
-# Ensure you have:
+## 1. Prerequisites  
+### Ensure you have:
 - Python 3.10+
 - pip installed
 - Virtualenv (recommended)
