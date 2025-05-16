@@ -1,9 +1,10 @@
 # 🛍️ Market Website  
 * A modern e-commerce platform with product browsing, cart functionality, user authentication, and  admin panel 
 * It's not production ready
-* ![Market Website Preview](https://via.placeholder.com/800x400?text=Market+Website+Homepage) 
-* (Replace with actual screenshot)*  
-* (Consider adding screenshots of key pages like products, cart, and admin view)
+* ![Market Website Preview]
+<video width="100%" controls>
+  <source src="https://github.com/Hazem-Ahmed-Salem/Market-Website/blob/master/Preview/video/Video.mp4" type="video/mp4">
+</video>
 
 ## ✨ Features  
 - **User System**  
