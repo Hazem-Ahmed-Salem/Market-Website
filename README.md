@@ -39,6 +39,12 @@
   - Analytics for sales  
   - User management  
 
+## ✨ User Roles  
+- **Manager**  
+- **Inventory Manager**  
+- **Employee (Website Clerk)**  
+- **Delivery Driver**  
+   
 <!-- ## 🚀 Live Demo  
 *(If deployed, add link here - e.g.: [View Live Demo](https://yourdeploymentlink.com))*   -->
 
