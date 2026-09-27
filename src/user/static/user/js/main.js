@@ -137,27 +137,44 @@ function initThumbnailImages() {
 
 // Initialize profile tabs
 function initProfileTabs() {
-    const profileMenuLinks = document.querySelectorAll('.profile-menu a');
+    const profileMenuLinks = document.querySelectorAll('.profile-menu a[href^="#"]');
     
-    profileMenuLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
-            e.preventDefault();
-            const sectionId = this.getAttribute('href').substring(1);
-            
-            // Remove active class from all links and sections
-            document.querySelectorAll('.profile-menu a').forEach(item => {
-                item.parentElement.classList.remove('active');
+    function switchTab(sectionId) {
+        if (!sectionId) return;
+        const targetSection = document.getElementById(sectionId);
+        const targetLink = document.querySelector(`.profile-menu a[href="#${sectionId}"]`);
+        
+        if (targetSection && targetLink) {
+            document.querySelectorAll('.profile-menu li').forEach(item => {
+                item.classList.remove('active');
             });
             
             document.querySelectorAll('.profile-section').forEach(section => {
                 section.classList.remove('active');
             });
             
-            // Add active class to clicked link and corresponding section
-            this.parentElement.classList.add('active');
-            document.getElementById(sectionId).classList.add('active');
+            targetLink.parentElement.classList.add('active');
+            targetSection.classList.add('active');
+        }
+    }
+
+    profileMenuLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const sectionId = this.getAttribute('href').substring(1);
+            if (history.pushState) {
+                history.pushState(null, null, `#${sectionId}`);
+            } else {
+                window.location.hash = `#${sectionId}`;
+            }
+            switchTab(sectionId);
         });
     });
+
+    if (window.location.hash) {
+        const hashId = window.location.hash.substring(1);
+        switchTab(hashId);
+    }
 }
 
 // Initialize checkout steps

@@ -4,25 +4,31 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SignIn&SignUp</title>
+    <title>Sign In & Sign Up | ShopEasy</title>
+    <!-- Modern Typography: Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'user/css/style.css' %}"/>
-    <link rel="stylesheet" href="{% static 'user/css/all.css' %}" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
     <style>
         .notification {
             position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 15px 25px;
-            border-radius: 5px;
+            top: 24px;
+            right: 24px;
+            padding: 14px 22px;
+            border-radius: 12px;
             color: white;
             font-size: 14px;
-            font-weight: 500;
+            font-weight: 600;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
             transform: translateX(120%);
-            transition: transform 0.3s ease-in-out;
+            transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
             z-index: 1000;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            font-family: 'Plus Jakarta Sans', sans-serif;
         }
 
         .notification.show {
@@ -30,11 +36,11 @@
         }
 
         .notification.success {
-            background-color: #4CAF50;
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
         }
 
         .notification.error {
-            background-color: #f44336;
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
         }
 
         .notification i {

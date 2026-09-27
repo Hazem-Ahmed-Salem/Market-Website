@@ -1,3 +1,5 @@
+from user.models import Profile
+from django.http import request
 from django.shortcuts import render,redirect
 from .models import Order,CartItem
 from product.models import Product
@@ -12,12 +14,24 @@ from product.models import Product, Stock
 
 
 def shopping_cart(request):
+    if not request.user.is_authenticated:
+        return redirect('login_signup')
+    try:
+        profile = request.user.profile
+    except Profile.DoesNotExist:
+        return redirect('next_register')
     items = CartItem.objects.filter(customer=request.user)
     total_price = sum(item.product.price * item.quantity for item in items)
     return render(request, 'order/shopping_cart.html',{'items':items,'total_price':total_price})
 
 @api_view(['POST'])
 def remove_from_cart(request, id):
+    if not request.user.is_authenticated:
+        return redirect('login_signup')
+    try:
+        profile = request.user.profile
+    except Profile.DoesNotExist:
+        return redirect('next_register')
     item = CartItem.objects.get(id=id)
     if not item:
         return Response({"error": "Order not found"}, status=status.HTTP_404_NOT_FOUND)
@@ -56,10 +70,22 @@ def add_to_cart(request, product_id):
 
 
 def order_view(request):
+    if not request.user.is_authenticated:
+        return redirect('login_signup')
+    try:
+        profile = request.user.profile
+    except Profile.DoesNotExist:
+        return redirect('next_register')
     orders = Order.objects.filter(customer=request.user).all()
     return render(request, 'order/order_view.html', {'orders': orders})
 
 def checkout(request):
+    if not request.user.is_authenticated:
+        return redirect('login_signup')
+    try:
+        profile = request.user.profile
+    except Profile.DoesNotExist:
+        return redirect('next_register')
     addresses = Address.objects.filter(user=request.user)
     items = CartItem.objects.filter(customer=request.user)
     if not items.exists():
@@ -119,6 +145,12 @@ def checkout(request):
     
     
 def receipt(request, order_id):
+    if not request.user.is_authenticated:
+        return redirect('login_signup')
+    try:
+        profile = request.user.profile
+    except Profile.DoesNotExist:
+        return redirect('next_register')
     order = Order.objects.filter(id=order_id).first()
     if not order:
         return render(request, '404.html', {'message': f'Order #{order_id} could not be found in the database.'}, status=404)
@@ -126,6 +158,12 @@ def receipt(request, order_id):
 
 @api_view(['POST'])
 def accept_pending_order(request,order_id):
+    if not request.user.is_authenticated:
+        return redirect('login_signup')
+    try:
+        profile = request.user.profile
+    except Profile.DoesNotExist:
+        return redirect('next_register')
     order = Order.objects.get(id=order_id)
     order.status = 'confirmed'
     order.save()
@@ -133,6 +171,12 @@ def accept_pending_order(request,order_id):
 
 @api_view(['POST'])
 def accept_confirmed_order(request,order_id):
+    if not request.user.is_authenticated:
+        return redirect('login_signup')
+    try:
+        profile = request.user.profile
+    except Profile.DoesNotExist:
+        return redirect('next_register')
     order = Order.objects.filter(id=order_id).first()
     order.status = 'shipped'
     order.save()
@@ -140,6 +184,12 @@ def accept_confirmed_order(request,order_id):
 
 @api_view(['POST'])
 def mark_order_as_delivered(request,order_id):
+    if not request.user.is_authenticated:
+        return redirect('login_signup')
+    try:
+        profile = request.user.profile
+    except Profile.DoesNotExist:
+        return redirect('next_register')
     order = Order.objects.filter(id=order_id).first()
     order.status = 'delivered'
     order.save()
@@ -169,6 +219,12 @@ def mark_order_as_delivered(request,order_id):
 
 @api_view(['POST'])
 def mark_order_as_cancelled(request,order_id):
+    if not request.user.is_authenticated:
+        return redirect('login_signup')
+    try:
+        profile = request.user.profile
+    except Profile.DoesNotExist:
+        return redirect('next_register')
     order = Order.objects.filter(id=order_id).first()
     order.status = 'cancelled'
     order.save()

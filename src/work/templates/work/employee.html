@@ -1,291 +1,16 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Store - DirectAdmin Style</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <!-- Add Chart.js library -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        :root {
-            --primary-blue: #3498db;
-            --light-blue: #e8f0fe;
-            --border-color: #e1e4e8;
-            --sidebar-width: 260px;
-            --header-height: 60px;
-            --text-color: #333;
-            --bg-color: #f8f9fa;
-            --card-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
+{% extends "work/base_work.html" %}
+{% load static %}
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        }
+{% block title %}Employee Dashboard | ShopEasy{% endblock %}
+{% block dashboard_title %}Employee Dashboard{% endblock %}
 
-        body {
-            background-color: var(--bg-color);
-            display: flex;
-            min-height: 100vh;
-        }
+{% block sidebar_nav %}
+    <a href="#" class="nav-item active" id="new-products-link"><i class="fas fa-boxes-stacked"></i> Newly added products</a>
+    <a href="#" class="nav-item" id="edit-product-link"><i class="fas fa-pen-to-square"></i> Edit Product</a>
+    <a href="#" class="nav-item" id="technical-complaints-link"><i class="fas fa-wrench"></i> Technical Complaints</a>
+{% endblock %}
 
-        /* Sidebar Styles */
-        .sidebar {
-            width: var(--sidebar-width);
-            background: #fff;
-            border-right: 1px solid var(--border-color);
-            padding: 0;
-            flex-shrink: 0;
-            height: 100vh;
-            overflow-y: auto;
-            position: fixed;
-            left: 0;
-            top: 0;
-        }
-
-        .sidebar-header {
-            padding: 20px;
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .sidebar-header h1 {
-            font-size: 18px;
-            color: var(--text-color);
-            font-weight: 500;
-        }
-
-        .nav-section {
-            padding: 15px 0;
-        }
-
-        .nav-title {
-            padding: 10px 20px;
-            font-size: 12px;
-            text-transform: uppercase;
-            color: #666;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-        }
-
-        .nav-item {
-            padding: 10px 20px;
-            display: flex;
-            align-items: center;
-            color: var(--text-color);
-            text-decoration: none;
-            font-size: 14px;
-            transition: background-color 0.2s;
-        }
-
-        .nav-item:hover {
-            background-color: var(--light-blue);
-        }
-
-        .nav-item.active {
-            background-color: var(--light-blue);
-            color: var(--primary-blue);
-        }
-
-        /* Main Content */
-        .main-content {
-            flex: 1;
-            margin-left: var(--sidebar-width);
-            padding: 20px;
-        }
-
-        /* Header */
-        .content-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding: 20px;
-            background: white;
-            border-radius: 8px;
-            box-shadow: var(--card-shadow);
-        }
-
-        .search-container {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex: 1;
-            max-width: 600px;
-        }
-
-        .search-bar {
-            display: flex;
-            align-items: center;
-            background: var(--bg-color);
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            padding: 8px 12px;
-            width: 100%;
-        }
-
-        .search-bar input {
-            border: none;
-            outline: none;
-            width: 100%;
-            font-size: 14px;
-            background: transparent;
-        }
-
-        .header-actions {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .btn {
-            padding: 8px 16px;
-            border-radius: 4px;
-            font-size: 14px;
-            font-weight: 500;
-            text-decoration: none;
-            cursor: pointer;
-            border: none;
-            transition: opacity 0.2s;
-            background-color: var(--primary-blue);
-            color: white;
-        }
-
-        .btn:hover {
-            opacity: 0.9;
-        }
-
-        /* Products Grid */
-        .products-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 20px;
-            padding: 20px;
-        }
-
-        .product-card {
-            background: white;
-            border-radius: 8px;
-            box-shadow: var(--card-shadow);
-            overflow: hidden;
-            transition: transform 0.2s, box-shadow 0.2s;
-            position: relative;
-        }
-
-        .product-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        }
-
-        .product-image {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-        }
-
-        .product-details {
-            padding: 15px;
-        }
-
-        .product-name {
-            font-size: 16px;
-            font-weight: 500;
-            color: var(--text-color);
-            margin-bottom: 8px;
-        }
-
-        .product-category {
-            color: var(--primary-blue);
-            font-size: 13px;
-            margin-bottom: 8px;
-        }
-
-        .product-price {
-            font-size: 18px;
-            font-weight: 600;
-            color: #2ecc71;
-            margin-bottom: 8px;
-        }
-
-        .product-stock {
-            font-size: 13px;
-            color: #666;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .stock-indicator {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background-color: #2ecc71;
-            display: inline-block;
-        }
-
-        .no-products {
-            text-align: center;
-            padding: 40px;
-            background: white;
-            border-radius: 8px;
-            box-shadow: var(--card-shadow);
-            grid-column: 1 / -1;
-        }
-
-        .no-products p {
-            color: #666;
-            font-size: 16px;
-        }
-
-        @media (max-width: 768px) {
-            .sidebar {
-                display: none;
-            }
-            .main-content {
-                margin-left: 0;
-            }
-            .content-header {
-                flex-direction: column;
-                gap: 15px;
-            }
-            .search-container {
-                max-width: 100%;
-            }
-        }
-    </style>
-</head>
-<body>
-
-    <div class="sidebar">
-        <div class="sidebar-header">
-            <h1 style="font-size: 20px; font-weight: 700; color: #3498db;">Employee Dashboard</h1>
-        </div>
-        <div class="nav-section">
-            <div class="nav-title" style="font-size: 14px; font-weight: 700; color: black;">Actions</div>
-
-            <a href="#" class="nav-item" id="new-products-link">Newly added products</a>
-            <a href="#" class="nav-item" id="edit-product-link">Edit Product</a>
-            <a href="#" class="nav-item" id="technical-complaints-link">Technical Complaints</a>
-        </div>
-    </div>
-
-    <!-- Main Content -->
-    <div class="main-content">
-        <div class="content-header">
-            <div class="search-container" id="search-container" style="display: flex;">
-                <div class="search-bar">
-                    <input type="text" id="searchInput" placeholder="Search products by name or category..." oninput="filterProducts()">
-                </div>
-            </div>
-            <div class="header-actions">
-                <a href="{% url 'store' %}" class="btn">Get Back To Store</a>
-            </div>
-        </div>
+{% block work_content %}
 
         <!-- New Products Container -->
         <div id="new-products-container" style="display: none; background: white; border-radius: 8px; box-shadow: var(--card-shadow); padding: 20px; margin-top: 20px;">
@@ -449,7 +174,9 @@
     <div id="delete-notification" style="display: none; position: fixed; bottom: 20px; right: 20px; padding: 15px 20px; background-color: #4CAF50; color: white; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); z-index: 1000;">
         <span id="delete-message">Product deleted successfully!</span>
     </div>
+{% endblock %}
 
+{% block extra_js %}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Helper function to get DOM elements with null checks
@@ -932,5 +659,4 @@
             }
         }
     </script>
-</body>
-</html>
+{% endblock %}

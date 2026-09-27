@@ -1,54 +1,57 @@
+{% extends "base.html" %}
 {% load static %}
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Checkout</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'user/css/all.css' %}" />
-    <link rel="stylesheet" href="{% static 'order/css/checkout.css' %}" />
-</head>
+
+{% block title %}Checkout | ShopEasy{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'order/css/checkout.css' %}" />
 <style>
-    :root {
-        --primary-blue: #3498db !important;
-        --primary-blue2: #1877f2;
-        --light-blue: #e8f0fe;
-        --border-color: #e1e4e8;
-        --danger: #dc3545;
-        --white: #fff;
-        --dark-blue: #0d47a1;
-        --text-color: #333;
-        --bg-color: #f8f9fa;
-        --summary-bg: #23394d;
-        --summary-text: #fff;
-        --summary-accent: #e8f0fe;
-        --button-orange: #f39c12;
+    .checkout-page-wrapper {
+        padding: 40px 0 60px 0;
     }
-
+    .checkout-container {
+        margin: 0 auto;
+        box-shadow: var(--shadow-lg);
+        border: 1px solid var(--border-subtle);
+    }
     .address-select, #payment_method, #address_type {
-        font-size: 16px;
-        padding: 10px;
-        border-radius: 5px;
-        border: 1px solid var(--border-color);
-        background-color: var(--light-blue);
-        color: var(--text-color);
+        font-size: 15px;
+        padding: 11px 14px;
+        border-radius: var(--radius-sm);
+        border: 1px solid var(--border-subtle);
+        background-color: #f8fafc;
+        color: var(--dark-color);
         width: 100%;
-        margin-bottom: 15px;
-        transition: border-color 0.3s ease;
+        margin-bottom: 18px;
+        transition: border-color 0.25s ease;
     }
-
     .address-select:focus, #payment_method:focus, #address_type:focus {
-        border-color: var(--primary-blue);
+        border-color: var(--primary-color);
         outline: none;
+        background-color: #ffffff;
+    }
+    .purchase-btn {
+        background: var(--primary-gradient) !important;
+        border-radius: var(--radius-sm) !important;
+        box-shadow: 0 4px 14px rgba(52, 152, 219, 0.3) !important;
+        transition: all 0.25s ease !important;
+    }
+    .purchase-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 22px rgba(52, 152, 219, 0.4) !important;
     }
 </style>
-<body>
+{% endblock %}
+
+{% block content %}
+<div class="checkout-page-wrapper">
     <div class="checkout-container">
-        <div class="checkout-summary">
-            <h2>Summary</h2>
+        <div class="checkout-summary" style="background: linear-gradient(145deg, #1e293b 0%, #2c3e50 100%);">
+            <h2>Order Summary</h2>
             <ul class="summary-list">
                 {% for item in items %}
                 <li class="summary-item">
-                    <img class="summary-img" src="{{ item.product.image.url }}" alt="{{ item.product.name }}" >
+                    <img class="summary-img" src="{{ item.product.image.url }}" alt="{{ item.product.name }}">
                     <div class="summary-info">
                         <span class="summary-name">{{ item.product.name }}</span>
                         <span class="summary-price">${{ item.product.price }}</span>
@@ -68,18 +71,23 @@
                         <span class="total-amount">${{ total_vat }}</span>
                     </div>
                     <div class="total-column">
-                        <span>Total</span>
-                        <span class="total-amount">${{ total_price }}</span>
+                        <span style="font-weight: 700;">Total</span>
+                        <span class="total-amount" style="font-size: 1.3rem; font-weight: 800; color: #2ecc71;">${{ total_price }}</span>
                     </div>
                 </div>
             </div>
         </div>
         <div class="checkout-payment">
-            <h2>Delivery Details</h2>
+            <h2>Delivery & Payment</h2>
             <form method="post">
                 {% csrf_token %}
                 <div class="form-group">
-                    <label style="font-size: 18px;" for="address">Select Delivery Address</label>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <label style="font-size: 15px; font-weight: 700; color: var(--dark-color);" for="address">Delivery Address</label>
+                        <a href="javascript:void(0)" onclick="toggleAddressForm(event)" style="font-size: 13px; font-weight: 600; color: var(--primary-color);">
+                            <i class="fas fa-plus"></i> Add New Address
+                        </a>
+                    </div>
                     <select id="address" name="address" required class="address-select">
                         <option value="">-- Select an address --</option>
                         {% for address in addresses %}
@@ -92,58 +100,68 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label style="font-size: 18px;" for="payment_method">Payment Method</label>
-                    <select id="payment_method" name="payment_method" required>
+                    <label style="font-size: 15px; font-weight: 700; color: var(--dark-color); display: block; margin-bottom: 8px;" for="payment_method">Payment Method</label>
+                    <select id="payment_method" name="payment_method" required class="address-select">
                         <option value="">-- Select payment method --</option>
-                        <option value="cash_on_delivery">Cash on delivery</option>
+                        <option value="cash_on_delivery" selected>Cash on delivery</option>
                     </select>
                 </div>
-                <button type="submit" class="purchase-btn">Proceed to Payment</button>
+                <button type="submit" class="purchase-btn btn" style="width: 100%; padding: 13px; font-size: 16px;">
+                    <i class="fas fa-lock"></i> Place Order (${{ total_price }})
+                </button>
             </form>
-            <div class="checkout-help">
-                Having problem with checkout? <a href="#">Contact our support</a>.
+            <div class="checkout-help" style="margin-top: 20px; color: var(--slate-muted); font-size: 13px; text-align: center;">
+                Need help with checkout? <a href="{% url 'profile' %}#complaints" style="color: var(--primary-color); font-weight: 600;">Contact our support</a>.
             </div>
-            <div class="form-group" id="new-address-form" style="display: none;">
-                <h3>Add New Address</h3>
+            <div class="form-group" id="new-address-form" style="display: none; margin-top: 24px; padding: 20px; background: #f8fafc; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);">
+                <h3 style="font-size: 16px; margin-bottom: 14px; color: var(--dark-color);">Add New Address</h3>
                 <form id="address-form" method="post" action="{% url 'add_address' %}">
                     {% csrf_token %}
-                    <div class="form-group">
-                        <label for="address_type">Address Type</label>
-                        <select id="address_type" name="address_type" required>
+                    <div class="form-group" style="margin-bottom: 12px;">
+                        <label for="address_type" style="font-size: 13px; font-weight: 600;">Address Type</label>
+                        <select id="address_type" name="address_type" required class="address-select" style="margin-bottom: 0;">
                             <option value="home">Home</option>
                             <option value="work">Work</option>
                             <option value="other">Other</option>
                         </select>
                     </div>
-                    <div class="form-group">
-                        <label for="address">Address</label>
-                        <input type="text" id="address" name="address" required>
+                    <div class="form-group" style="margin-bottom: 12px;">
+                        <label for="new_address" style="font-size: 13px; font-weight: 600;">Street Address</label>
+                        <input type="text" id="new_address" name="address" required class="address-select" style="margin-bottom: 0;">
                     </div>
-                    <div class="form-group">
-                        <label for="apartment">Apartment (optional)</label>
-                        <input type="text" id="apartment" name="apartment">
+                    <div class="form-group" style="margin-bottom: 12px;">
+                        <label for="apartment" style="font-size: 13px; font-weight: 600;">Apartment (optional)</label>
+                        <input type="text" id="apartment" name="apartment" class="address-select" style="margin-bottom: 0;">
                     </div>
-                    <div class="form-group">
-                        <label for="city">City</label>
-                        <input type="text" id="city" name="city" required>
+                    <div class="form-group" style="margin-bottom: 12px;">
+                        <label for="city" style="font-size: 13px; font-weight: 600;">City</label>
+                        <input type="text" id="city" name="city" required class="address-select" style="margin-bottom: 0;">
                     </div>
-                    <div class="form-group">
-                        <label for="governorate">Governorate</label>
-                        <input type="text" id="governorate" name="governorate" required>
+                    <div class="form-group" style="margin-bottom: 16px;">
+                        <label for="governorate" style="font-size: 13px; font-weight: 600;">Governorate</label>
+                        <input type="text" id="governorate" name="governorate" required class="address-select" style="margin-bottom: 0;">
                     </div>
-                    <button type="submit" class="btn">Save Address</button>
+                    <button type="submit" class="btn" style="width: 100%; font-size: 14px;">Save Address</button>
                 </form>
             </div>
         </div>
     </div>
-    <script>
-        function toggleAddressForm(event) {
-            event.preventDefault();
-            const form = document.getElementById('new-address-form');
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function toggleAddressForm(event) {
+        if (event) event.preventDefault();
+        const form = document.getElementById('new-address-form');
+        if (form) {
             form.style.display = form.style.display === 'none' ? 'block' : 'none';
         }
+    }
 
-        document.getElementById('address-form').addEventListener('submit', function(event) {
+    const addrForm = document.getElementById('address-form');
+    if (addrForm) {
+        addrForm.addEventListener('submit', function(event) {
             event.preventDefault();
             const form = event.target;
             const formData = new FormData(form);
@@ -160,7 +178,8 @@
                 if (data.success) {
                     showNotification('Address added successfully!', 'success');
                     form.reset();
-                    form.style.display = 'none';
+                    form.parentElement.style.display = 'none';
+                    setTimeout(() => location.reload(), 800);
                 } else {
                     showNotification(data.error || 'Failed to add address', 'error');
                 }
@@ -170,6 +189,6 @@
                 showNotification('An error occurred while adding the address', 'error');
             });
         });
-    </script>
-</body>
-</html>
+    }
+</script>
+{% endblock %}

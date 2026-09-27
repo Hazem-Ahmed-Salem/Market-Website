@@ -1,0 +1,61 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token }}">
+    <title>{% block title %}Work Portal | ShopEasy{% endblock %}</title>
+    
+    <!-- Modern Typography: Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Common Work Dashboard Stylesheet -->
+    <link rel="stylesheet" href="{% static 'work/css/work_dashboard.css' %}">
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h1 style="font-size: 19px; font-weight: 800; color: #3498db;">{% block dashboard_title %}Dashboard{% endblock %}</h1>
+        </div>
+        <div class="nav-section">
+            <div class="nav-title">Actions</div>
+            {% block sidebar_nav %}{% endblock %}
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="content-header">
+            {% block search_container %}
+            <div class="search-container" id="search-container" style="display: flex;">
+                <div class="search-bar">
+                    <input type="text" id="searchInput" placeholder="Search products by name or category..." oninput="filterProducts()">
+                </div>
+            </div>
+            {% endblock %}
+            <div class="header-actions">
+                <a href="{% url 'store' %}" class="btn">
+                    <i class="fas fa-store"></i> Get Back To Store
+                </a>
+            </div>
+        </div>
+
+        {% block work_content %}{% endblock %}
+    </div>
+
+    <!-- Global Notification Toast Container -->
+    <div id="notification-container" class="notification-container" aria-live="polite"></div>
+
+    <script src="{% static 'user/js/shop.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

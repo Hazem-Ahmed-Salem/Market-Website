@@ -1,394 +1,194 @@
+{% extends "base.html" %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ShopEasy - Product Detail</title>
-    <link rel="stylesheet" href="{% static 'user/css/style2.css' %}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <style>
-        .header-user-avatar,
-        .user-profile-link img {
-            width: 38px !important;
-            height: 38px !important;
-            max-width: 38px !important;
-            max-height: 38px !important;
-            min-width: 38px !important;
-            min-height: 38px !important;
-            border-radius: 50% !important;
-            object-fit: cover !important;
-            border: 2px solid #3498db !important;
-            display: inline-block !important;
-            vertical-align: middle !important;
-            box-shadow: 0 2px 6px rgba(52, 152, 219, 0.25) !important;
-            transition: transform 0.2s ease, box-shadow 0.2s ease !important;
-        }
-        .header-user-avatar:hover,
-        .user-profile-link:hover img {
-            transform: scale(1.08) !important;
-            box-shadow: 0 4px 10px rgba(52, 152, 219, 0.4) !important;
-        }
-    </style>
-</head>
-<body>
-    <header>
-        <div class="container">
-            <div class="logo">
-                <a href="{% url 'store' %}"><h1>ShopEasy</h1></a>
-            </div>
-            <nav>
-                <ul>
-                    <li><a href="{% url 'store' %}">Home</a></li>
-                    <li><a href="{% url 'featured_products' 'all' %}">Products</a></li>
-                    {% comment %} <li><a href="{% url 'complaint' %}">Complaint</a></li> {% endcomment %}
-                </ul>
-            </nav>
-            <div class="header-icons">
-                <a href="{% url 'shopping_cart' %}"><i class="fas fa-shopping-cart"></i></a>
-                <a href="{% url 'wishlist_view' %}"><i class="fas fa-heart"></i></a>
-                {% if user.is_authenticated %}
-                <a href="{% url 'profile' %}" class="user-profile-link" title="My Profile ({{ user.first_name|default:user.email }})" style="display: inline-flex; align-items: center; justify-content: center;">
-                    {% if user.profile and user.profile.profile_picture %}
-                    <img src="{{ user.profile.profile_picture.url }}" alt="{{ user.first_name }}'s Profile" class="header-user-avatar" style="width: 38px; height: 38px; min-width: 38px; max-width: 38px; border-radius: 50%; object-fit: cover; border: 2px solid #3498db; vertical-align: middle; display: inline-block; box-shadow: 0 2px 6px rgba(52, 152, 219, 0.25); transition: transform 0.2s ease, box-shadow 0.2s ease;" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
-                    <i class="fas fa-user-circle" style="font-size: 28px; vertical-align: middle; display: none;"></i>
+
+{% block title %}ShopEasy - {{ product.name }}{% endblock %}
+
+{% block content %}
+<section class="product-detail" style="padding: 40px 0 60px 0;">
+    <div class="container">
+        <div class="product-detail-container" style="background: #ffffff; border-radius: var(--radius-lg); padding: 36px; box-shadow: var(--shadow-md); border: 1px solid var(--border-subtle); display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 40px; margin-bottom: 50px;">
+            <div class="product-images">
+                <div class="main-image" style="border-radius: var(--radius-md); overflow: hidden; background: #f8fafc; border: 1px solid var(--border-subtle); max-height: 440px; display: flex; align-items: center; justify-content: center;">
+                    {% if product.image %}
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}" id="main-product-image" style="width: 100%; height: 100%; object-fit: cover;">
                     {% else %}
-                    <i class="fas fa-user-circle" style="font-size: 28px; vertical-align: middle;"></i>
-                    {% endif %}
-                </a>
-                {% else %}
-                <a href="{% url 'login_signup' %}" class="btn btn-outline" style="padding: 6px 14px; font-size: 14px;">Login</a>
-                {% endif %}
-            </div>
-        </div>
-    </header>
-
-    <main>
-        <section class="product-detail">
-            <div class="container">
-                <div class="product-detail-container">
-                    <div class="product-images">
-                        <div class="main-image">
-                            <img src="{{product.image.url}}" style="border-radius: 10px; object-fit: cover;" alt="Product Image" id="main-product-image">
-                        </div>
+                    <div style="font-size: 64px; color: var(--gray-color); padding: 80px 0;">
+                        <i class="fas fa-shopping-bag"></i>
                     </div>
-                    
-                    <div class="product-info">
-                        <h1 id="product-title">{{product.name}}</h1>
-                        <div class="product-meta">
-                            {% if product.get_stock_status %}
-                                <span style="color: green; font-weight: bold;" class="availability">In Stock</span>
-                            {% else %}
-                                <span style="color: red; font-weight: bold;" class="availability">Out of Stock</span>
-                            {% endif %}
-                        </div>
-                        
-                        <div class="price">
-                            <span class="current-price">${{product.price}}</span>
-                        </div>
-                        
-                        <div class="product-description">
-                            <p>{{product.category.name}}</p>
-                        </div>
-                        <div class="product-description">
-                            <p>{{product.description}}</p>
-                        </div>
-                        
-                        <div class="product-options">
-                            <div class="option">
-                                {%if product.category.name == 'Dairy' %}
-                                <label>Liters:</label>
-                                {% endif %}
-                                {%if product.category.name == 'Fruits' %}
-                                <label>Kg:</label>
-                                {% endif %}
-                                {%if product.category.name == 'Vegetables' %}
-                                <label>Kg:</label>
-                                {% endif %}
-                                {%if product.category.name == 'Beverages' %}
-                                <label>Liters:</label>
-                                {% endif %}
-                                {%if product.category.name == 'Snacks' %}
-                                <label>Packets:</label>
-                                {% endif %}
-                                
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="product-info" style="display: flex; flex-direction: column; justify-content: center;">
+                <div style="display: flex; align-items: center; justify-content: space-between; gap: 15px; margin-bottom: 12px;">
+                    <span style="font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--primary-color); background: rgba(52, 152, 219, 0.1); padding: 4px 12px; border-radius: 20px;">
+                        {{ product.category.name|default:"General" }}
+                    </span>
+                    <button type="button" class="btn-wishlist-float" style="position: static;" onclick="addToWishlist(event, {{ product.id }})" aria-label="Toggle Wishlist" title="Wishlist">
+                        <i class="fas fa-heart wishlist-icon {% if product in request.user.wishlist_products.all %}active{% endif %}"></i>
+                    </button>
+                </div>
 
-                                <div class="quantity-selector">
-                                    <input type="number" value="1" min="1" id="quantity" style="width: 100px;">
-                                        
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="product-actions">
-                            {% if product.has_stock %}
-                            <button class="btn add-to-cart" onclick="addToCart({{product.id}}, this)">Add one to Cart</button>
+                <h1 id="product-title" style="font-size: 2.2rem; font-weight: 800; color: var(--dark-color); margin-bottom: 12px; line-height: 1.25;">
+                    {{ product.name }}
+                </h1>
+
+                <div class="product-meta" style="margin-bottom: 18px;">
+                    {% if product.get_stock_status or product.has_stock %}
+                        <span style="color: var(--secondary-color); font-weight: 700; font-size: 14px; display: inline-flex; align-items: center; gap: 6px;">
+                            <i class="fas fa-circle-check"></i> In Stock
+                        </span>
+                    {% else %}
+                        <span style="color: var(--danger-color); font-weight: 700; font-size: 14px; display: inline-flex; align-items: center; gap: 6px;">
+                            <i class="fas fa-circle-xmark"></i> Out of Stock
+                        </span>
+                    {% endif %}
+                </div>
+                
+                <div class="price" style="display: flex; align-items: baseline; gap: 4px; margin-bottom: 20px;">
+                    <span style="font-size: 1.5rem; font-weight: 700; color: var(--dark-color);">$</span>
+                    <span class="current-price" style="font-size: 2.4rem; font-weight: 800; color: var(--dark-color);">{{ product.price }}</span>
+                </div>
+                
+                {% if product.description %}
+                <div class="product-description" style="color: var(--slate-muted); font-size: 1rem; line-height: 1.7; margin-bottom: 25px;">
+                    <p>{{ product.description }}</p>
+                </div>
+                {% endif %}
+                
+                <div class="product-options" style="margin-bottom: 25px; padding-top: 15px; border-top: 1px solid var(--border-subtle);">
+                    <div class="option" style="display: flex; align-items: center; gap: 15px;">
+                        <label for="quantity" style="font-weight: 700; color: var(--dark-color); font-size: 15px;">
+                            {% if product.category.name == 'Dairy' or product.category.name == 'Beverages' %}
+                            Volume (L):
+                            {% elif product.category.name == 'Fruits' or product.category.name == 'Vegetables' %}
+                            Weight (Kg):
+                            {% elif product.category.name == 'Snacks' %}
+                            Packets:
                             {% else %}
-                            <button class="btn add-to-cart" disabled>Out of Stock</button>
+                            Quantity:
                             {% endif %}
-                        </div>
-                        
-                        <div class="product-shipping">
-                            <p><i class="fas fa-truck"></i> Free shipping on orders over $50</p>
+                        </label>
+                        <div class="quantity-selector">
+                            <input type="number" value="1" min="1" id="quantity" style="width: 90px; padding: 10px 14px; border: 1.5px solid var(--border-subtle); border-radius: var(--radius-sm); font-size: 16px; font-weight: 700; text-align: center; outline: none; transition: border-color 0.2s;">
                         </div>
                     </div>
                 </div>
                 
-                <div class="related-products">
-                    <h2>You May Also Like</h2>
-                    <div class="products-grid" id="related-products">
-                        <!-- Related products will be loaded via JavaScript -->
-                        {% for product in suggested_products %}
-                    <div class="product-card">
-                        <a href="{% url 'product_view' product.id %}">
-                        <div class="product-image">
-                            <img src="{{ product.image.url }}" alt="{{ product.name }}">
-                        </div>
-                        </a>
-                        <div class="product-info">
-                            <h3>{{ product.name }}</h3>
-                            <div class="product-description">
-                                <p>{{product.category.name}}</p>
-                            </div>
-                            <div class="price">
-                                <span class="current-price">{{ product.price }}</span>
-                                </div>
-                            <div class="product-actions">
-                                <div class="product-actions">
-                                    <button class="btn-add-to-cart" onclick="addToCart({{product.id}}, this)">Add to Cart</button>
-                                    <script>
-                                    function showNotification(message, type = 'success') {
-                                        const notification = document.getElementById('notification');
-                                        const messageElement = document.getElementById('notification-message');
-                                        
-                                        // Set message and style
-                                        messageElement.textContent = message;
-                                        notification.style.backgroundColor = type === 'success' ? '#4CAF50' : '#f44336';
-                                        
-                                        // Show notification
-                                        notification.style.display = 'block';
-                                        
-                                        // Hide after 3 seconds
-                                        setTimeout(() => {
-                                            notification.style.display = 'none';
-                                        }, 3000);
-                                    }
-
-                                    function addToCart(productId, button) {
-                                        button.disabled = true;
-                                        button.textContent = 'Adding...';
-                                        quantitybody = document.getElementById("quantity")
-                                        if ( quantitybody.value < 0)
-                                        {
-                                            alert("the quantity can't be a negative number");
-                                            return ;
-                                        }
-                                        fetch(`{% url 'add_to_cart' product_id=0 %}`.replace('0', productId), {
-                                            method: 'POST',
-                                            headers: {
-                                                'X-CSRFToken': '{{ csrf_token }}',
-                                                'Content-Type': 'application/json'
-                                            },
-                                            body: JSON.stringify({ quantity: quantitybody.value })
-                                        })
-                                        .then(response => {
-                                            if (!response.ok) {
-                                                throw new Error('Network response was not ok');
-                                            }
-                                            return response.json();
-                                        })
-                                        .then(data => {
-                                            if (data.success) {
-                                                // Update cart count in header
-                                                const cartCountElement = document.querySelector('.cart-count');
-                                                if (cartCountElement) {
-                                                    cartCountElement.textContent = data.cart_count;
-                                                }
-                                                
-                                                button.textContent = 'Add one more to Cart';
-                                                button.disabled = false;
-                                                button.classList.add('added');
-                                                
-                                                // Show success notification
-                                                showNotification('Product added to cart successfully!', 'success');
-                                            } else {
-                                                throw new Error(data.error || 'Failed to add to cart');
-                                            }
-                                        })
-                                        .catch(error => {
-                                            console.error('Error:', error);
-                                            showNotification('Failed to add item to cart', 'error');
-                                            button.textContent = 'Add one to Cart';
-                                            button.disabled = false;
-                                        });
-                                    }
-                                    </script>
-                                </div>
-                                
-                                <button class="btn-wishlist" data-id="{{ product.id }}">
-                                    <i class="fas fa-heart wishlist-icon {% if product in request.user.wishlist_products.all %}active{% endif %}" 
-                                        onclick="addToWishlist(event, {{ product.id }})"
-                                        style="position: absolute; bottom: 70px; right: 25px; cursor: pointer; font-size: 20px;">
-                                    </i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    {% endfor %}
-                    </div>
+                <div class="product-actions" style="display: flex; gap: 15px; margin-bottom: 25px;">
+                    {% if product.get_stock_status or product.has_stock %}
+                    <button type="button" class="btn btn-add-to-cart" id="detail-add-to-cart" style="padding: 14px 28px; font-size: 16px; width: 100%;" onclick="addProductDetailToCart({{ product.id }}, this)">
+                        <i class="fas fa-cart-plus"></i> Add to Cart
+                    </button>
+                    {% else %}
+                    <button type="button" class="btn btn-add-to-cart" disabled style="padding: 14px 28px; font-size: 16px; width: 100%;">
+                        <i class="fas fa-ban"></i> Out of Stock
+                    </button>
+                    {% endif %}
                 </div>
-            </div>
-        </section>
-    </main>
-
-    <footer>
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <a href="{% url 'store' %}"><h3>ShopEasy</h3></a>
-                    <p>Your one-stop shop for all your needs.</p>
+                
+                <div class="product-shipping" style="display: flex; align-items: center; gap: 10px; color: var(--slate-muted); font-size: 14px;">
+                    <i class="fas fa-truck-fast" style="color: var(--primary-color); font-size: 18px;"></i>
+                    <span>Free shipping on all orders over $50</span>
                 </div>
-                <div class="footer-section">
-                    <h3>Quick Links</h3>
-                    <ul>
-                        <li><a href="{% url 'store' %}">Home</a></li>
-                        <li><a href="{% url 'featured_products' 'all' %}">Products</a></li>
-                        <li><a href="{% url 'shopping_cart' %}">Cart</a></li>
-                        <li><a href="{% url 'profile' %}">Account</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h3>Customer Service</h3>
-                    <ul>
-                        {% comment %} <li><a href="{% url 'complaint' %}">Contact Us</a></li> {% endcomment %}
-                        <li><a href="#">FAQs</a></li>
-                        <li><a href="#">Returns Policy</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2025 ShopEasy. All rights reserved.</p>
             </div>
         </div>
-    </footer>
-    <script src="{% static 'user/js/main.js' %}"></script>
-    <script>
-        function getCookie(name) {
-            let cookieValue = null;
-            if (document.cookie && document.cookie !== '') {
-                const cookies = document.cookie.split(';');
-                for (let i = 0; i < cookies.length; i++) {
-                    const cookie = cookies[i].trim();
-                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
-                    }
-                }
-            }
-            return cookieValue;
-        }
+        
+        {% if suggested_products %}
+        <div class="related-products">
+            <h2 style="font-size: 1.6rem; font-weight: 800; color: var(--dark-color); margin-bottom: 24px;">You May Also Like</h2>
+            <div class="products-grid" id="related-products">
+                {% for item in suggested_products %}
+                <div class="product-card">
+                    <div class="product-image">
+                        <a href="{% url 'product_view' item.id %}">
+                            {% if item.image %}
+                            <img src="{{ item.image.url }}" alt="{{ item.name }}" loading="lazy">
+                            {% else %}
+                            <div class="product-image-fallback">
+                                <i class="fas fa-shopping-bag"></i>
+                            </div>
+                            {% endif %}
+                        </a>
+                        <button type="button" class="btn-wishlist-float" onclick="addToWishlist(event, {{ item.id }})" aria-label="Toggle Wishlist" title="Wishlist">
+                            <i class="fas fa-heart wishlist-icon {% if item in request.user.wishlist_products.all %}active{% endif %}"></i>
+                        </button>
+                    </div>
+                    <div class="product-info">
+                        <a href="{% url 'product_view' item.id %}" class="product-title-link">
+                            <h3>{{ item.name }}</h3>
+                        </a>
+                        <div class="product-description">
+                            <p>{{ item.category.name|default:"General" }}</p>
+                        </div>
+                        <div class="price">
+                            <span class="currency-symbol">$</span><span class="current-price">{{ item.price }}</span>
+                        </div>
+                        <div class="product-actions">
+                            <button type="button" class="btn-add-to-cart" onclick="addToCart(event, {{ item.id }}, this)">
+                                <i class="fas fa-cart-plus"></i> Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
 
-        function addToWishlist(event, productId) {
-            event.preventDefault();
-            event.stopPropagation();
-            
-            const wishlistIcon = event.currentTarget;
-            const csrfToken = getCookie('csrftoken');
-            
-            // Toggle the heart color immediately
-            const isActive = wishlistIcon.classList.contains('active');
-            if (isActive) {
-                wishlistIcon.classList.remove('active');
-            } else {
-                wishlistIcon.classList.add('active');
-            }
+{% block extra_js %}
+<script>
+function addProductDetailToCart(productId, button) {
+    const quantityInput = document.getElementById("quantity");
+    const quantity = quantityInput ? parseInt(quantityInput.value) : 1;
+    if (quantity <= 0 || isNaN(quantity)) {
+        showNotification("Please select a valid quantity (1 or more).", "error");
+        return;
+    }
+    const originalHtml = button.innerHTML;
+    button.disabled = true;
+    button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Adding...';
+    const csrfToken = getCookie('csrftoken');
 
-            fetch(`/product/wishlist/${productId}/`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': csrfToken
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'added') {
-                    showNotification('Product added to wishlist!', 'success');
-                } else if (data.status === 'removed') {
-                    showNotification('Product removed from wishlist!', 'success');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                // Revert the heart color if there's an error
-                if (isActive) {
-                    wishlistIcon.classList.add('active');
-                } else {
-                    wishlistIcon.classList.remove('active');
-                }
-                showNotification('Error updating wishlist!', 'error');
-            });
-        }
-
-        function showNotification(message, type) {
-            const notification = document.createElement('div');
-            notification.className = `notification ${type}`;
-            notification.textContent = message;
-            
-            document.body.appendChild(notification);
-            
+    fetch(`/order/add_to_cart/${productId}/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken
+        },
+        body: JSON.stringify({ quantity: quantity })
+    })
+    .then(response => {
+        if (!response.ok) throw new Error('Network error');
+        return response.json();
+    })
+    .then(data => {
+        if (data.success || data.cart_count !== undefined) {
+            const cartCountElements = document.querySelectorAll('.cart-count');
+            cartCountElements.forEach(el => el.textContent = data.cart_count);
+            button.innerHTML = '<i class="fas fa-check"></i> Added to Cart!';
+            button.style.backgroundColor = '#2ecc71';
+            showNotification(`Added ${quantity} item(s) to cart successfully!`, 'success');
             setTimeout(() => {
-                notification.remove();
-            }, 3000);
+                button.innerHTML = originalHtml;
+                button.disabled = false;
+                button.style.backgroundColor = '';
+            }, 1800);
+        } else {
+            button.innerHTML = originalHtml;
+            button.disabled = false;
+            showNotification(data.message || 'Could not add to cart.', 'error');
         }
-    </script>
-
-    <style>
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 15px 25px;
-            border-radius: 5px;
-            color: white;
-            z-index: 1000;
-            animation: slideIn 0.5s ease-out;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            font-weight: 500;
-            min-width: 250px;
-            text-align: center;
-        }
-
-        .notification.success {
-            background-color: #4CAF50;
-            border: 1px solid #45a049;
-        }
-
-        .notification.error {
-            background-color: #f44336;
-            border: 1px solid #da190b;
-        }
-
-        .wishlist-icon {
-            color: #000;
-            transition: color 0.3s ease;
-        }
-
-        .wishlist-icon.active {
-            color: #ff4d4d;
-        }
-
-        @keyframes slideIn {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-    </style>
-</body>
-</html>
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        button.innerHTML = originalHtml;
+        button.disabled = false;
+        showNotification('Please login to add items to your cart.', 'error');
+    });
+}
+</script>
+{% endblock %}

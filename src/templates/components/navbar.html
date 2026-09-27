@@ -1,50 +1,60 @@
 {% load static %}
-<header>
-    <div class="container">
+<header class="main-header">
+    <div class="container header-container">
         <div class="logo">
-            <a href="{% url 'store' %}"><h1>ShopEasy</h1></a>
+            <a href="{% url 'store' %}">
+                <h1>ShopEasy</h1>
+            </a>
         </div>
-        <nav>
+        <nav class="main-nav">
             <ul>
-                <li><a href="{% url 'store' %}" class="{% if request.resolver_match.url_name == 'store' %}active{% endif %}">Home</a></li>
-                <li><a href="{% url 'featured_products' 'all' %}" class="{% if request.resolver_match.url_name == 'featured_products' %}active{% endif %}">Products</a></li>
+                <li>
+                    <a href="{% url 'store' %}" class="{% if request.resolver_match.url_name == 'store' %}active{% endif %}">
+                        <i class="fas fa-house" style="margin-right: 5px; font-size: 13px;"></i> Home
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'featured_products' 'all' %}" class="{% if request.resolver_match.url_name == 'featured_products' %}active{% endif %}">
+                        <i class="fas fa-boxes-stacked" style="margin-right: 5px; font-size: 13px;"></i> Products
+                    </a>
+                </li>
                 {% if user.is_authenticated and user.user_role != 'customer' %}
                 <li>
                     {% if user.user_role == 'employee' %}
-                    <a href="{% url 'employee_view' %}">
+                    <a href="{% url 'employee_view' %}" class="{% if request.resolver_match.url_name == 'employee_view' %}active{% endif %}">
                     {% elif user.user_role == 'manager' %}
-                    <a href="{% url 'manager_view' %}">
+                    <a href="{% url 'manager_view' %}" class="{% if request.resolver_match.url_name == 'manager_view' %}active{% endif %}">
                     {% elif user.user_role == 'inventory_manager' %}
-                    <a href="{% url 'inventory_manager_view' %}">
+                    <a href="{% url 'inventory_manager_view' %}" class="{% if request.resolver_match.url_name == 'inventory_manager_view' %}active{% endif %}">
                     {% elif user.user_role == 'driver' %}
-                    <a href="{% url 'driver_view' %}">
+                    <a href="{% url 'driver_view' %}" class="{% if request.resolver_match.url_name == 'driver_view' %}active{% endif %}">
                     {% else %}
                     <a href="{% url 'store' %}">
                     {% endif %}
-                    Work Portal</a>
+                    <i class="fas fa-briefcase" style="margin-right: 5px; font-size: 13px;"></i> Work Portal</a>
                 </li>
                 {% endif %}
             </ul>
         </nav>
         <div class="header-icons">
-            <a href="{% url 'shopping_cart' %}" title="Shopping Cart" style="position: relative;">
+            <a href="{% url 'shopping_cart' %}" class="header-icon-link cart-link" title="Shopping Cart">
                 <i class="fas fa-shopping-cart"></i>
                 <span class="cart-count">{% if cart_count %}{{ cart_count }}{% elif user.is_authenticated %}{{ user.cartitem_set.count|default:0 }}{% else %}0{% endif %}</span>
             </a>
-            <a href="{% url 'wishlist_view' %}" title="Wishlist">
+            <a href="{% url 'wishlist_view' %}" class="header-icon-link wishlist-link" title="My Wishlist">
                 <i class="fas fa-heart"></i>
             </a>
             {% if user.is_authenticated %}
-            <a href="{% url 'profile' %}" class="user-profile-link" title="My Profile ({{ user.first_name|default:user.email }})" style="display: inline-flex; align-items: center; justify-content: center;">
+            <a href="{% url 'profile' %}" class="user-profile-link" title="My Profile ({{ user.first_name|default:user.email }})">
                 {% if user.profile and user.profile.profile_picture %}
-                <img src="{{ user.profile.profile_picture.url }}" alt="{{ user.first_name }}'s Profile" class="header-user-avatar" style="width: 38px; height: 38px; min-width: 38px; max-width: 38px; border-radius: 50%; object-fit: cover; border: 2px solid #3498db; vertical-align: middle; display: inline-block; box-shadow: 0 2px 6px rgba(52, 152, 219, 0.25); transition: transform 0.2s ease, box-shadow 0.2s ease;" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
+                <img src="{{ user.profile.profile_picture.url }}" alt="{{ user.first_name }}'s Profile" class="header-user-avatar" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
                 <i class="fas fa-user-circle" style="font-size: 28px; vertical-align: middle; display: none;"></i>
                 {% else %}
                 <i class="fas fa-user-circle" style="font-size: 28px; vertical-align: middle;"></i>
                 {% endif %}
             </a>
             {% else %}
-            <a href="{% url 'login_signup' %}" class="btn btn-outline" style="padding: 6px 14px; font-size: 14px;">Login</a>
+            <a href="{% url 'login_signup' %}" class="btn btn-outline" style="margin-top: 3vh; padding: 7px 16px; font-size: 14px;">Log In</a>
             {% endif %}
         </div>
     </div>

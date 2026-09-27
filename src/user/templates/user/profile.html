@@ -1,80 +1,9 @@
+{% extends "base.html" %}
 {% load static %}
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ShopEasy - My Profile</title>
-    <link rel="stylesheet" href="{% static 'user/css/style2.css' %}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <style>
-        .header-user-avatar,
-        .user-profile-link img {
-            width: 38px !important;
-            height: 38px !important;
-            max-width: 38px !important;
-            max-height: 38px !important;
-            min-width: 38px !important;
-            min-height: 38px !important;
-            border-radius: 50% !important;
-            object-fit: cover !important;
-            border: 2px solid #3498db !important;
-            display: inline-block !important;
-            vertical-align: middle !important;
-            box-shadow: 0 2px 6px rgba(52, 152, 219, 0.25) !important;
-            transition: transform 0.2s ease, box-shadow 0.2s ease !important;
-        }
-        .header-user-avatar:hover,
-        .user-profile-link:hover img {
-            transform: scale(1.08) !important;
-            box-shadow: 0 4px 10px rgba(52, 152, 219, 0.4) !important;
-        }
-    </style>
-</head>
-<body>
-    <header>
-        <div class="container">
-            <div class="logo">
-                <a href="{% url 'store' %}"><h1>ShopEasy</h1></a>
-            </div>
-            <nav>
-                <ul>
-                    <li><a href="{% url 'store'%}">Store</a></li>
-                    <li><a href="{% url 'profile' %}" class="active">Account</a></li>
-                    {% if user.user_role != 'customer' and user.is_authenticated %}
-                    <li>
-                        {% if user.user_role == 'employee' %}
-                        <a href="{% url 'employee_view' %}">
-                        {% elif user.user_role == 'manager' %}
-                        <a href="{% url 'manager_view' %}">
-                        {% elif user.user_role == 'inventory_manager' %}
-                        <a href="{% url 'inventory_manager_view' %}">
-                        {% endif %}
-                        {% if user.user_role == 'driver' %}
-                        <a href="{% url 'driver_view' %}">
-                        {% endif %}
-                        Work</a>
-                        </li>
-                    {% endif %}
-                </ul>
-            </nav>
-            <div class="header-icons">
-                <a href="{% url 'shopping_cart' %}"><i class="fas fa-shopping-cart"></i></a>
-                <a href="{% url 'wishlist_view'%}"><i class="fas fa-heart"></i></a>
-                <a href="{% url 'profile' %}" class="user-profile-link active" title="My Profile ({{ user.first_name|default:user.email }})" style="display: inline-flex; align-items: center; justify-content: center;">
-                    {% if user.profile and user.profile.profile_picture %}
-                    <img src="{{ user.profile.profile_picture.url }}" alt="{{ user.first_name }}'s Profile" class="header-user-avatar" style="width: 38px; height: 38px; min-width: 38px; max-width: 38px; border-radius: 50%; object-fit: cover; border: 2px solid #3498db; vertical-align: middle; display: inline-block; box-shadow: 0 2px 6px rgba(52, 152, 219, 0.25); transition: transform 0.2s ease, box-shadow 0.2s ease;" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
-                    <i class="fas fa-user-circle" style="font-size: 28px; vertical-align: middle; display: none;"></i>
-                    {% else %}
-                    <i class="fas fa-user-circle" style="font-size: 28px; vertical-align: middle;"></i>
-                    {% endif %}
-                </a>
-            </div>
-        </div>
-    </header>
+{% block title %}ShopEasy - My Profile{% endblock %}
 
-    <main>
+{% block content %}
         <section class="profile">
             <div class="container">
                 
@@ -91,8 +20,8 @@
                                 <input type="file" id="profile-picture-input" accept="image/*" style="display: none;">
                             </div>
                             <h3>{{ user.first_name|title }} {{ user.last_name|title }}</h3>
-                            <p style="color: #3498db; font-size: 15px">{{user.user_role|title}}</p>
-                            <p style="font-size: 15px">Member since {{ user.date_joined|date:"Y" }}</p>
+                            <span class="user-role-badge">{{ user.user_role|title }}</span>
+                            <p class="member-since"><i class="far fa-calendar-alt"></i> Member since {{ user.date_joined|date:"Y" }}</p>
                         </div>
                         
                         <nav class="profile-menu">
@@ -169,11 +98,12 @@
                                         </tr>
                                         {% endfor %}
                                     {% else %}
-                                    <div class="order-header">
-                                        <div class="order-id">
-                                            <span>No orders yet!</span>
-                                        </div>
-                                    </div>
+                                    <tr>
+                                        <td colspan="5" style="text-align: center; padding: 36px 20px; color: #64748b;">
+                                            <i class="fas fa-inbox" style="font-size: 32px; color: #cbd5e1; margin-bottom: 8px; display: block;"></i>
+                                            No recent orders found.
+                                        </td>
+                                    </tr>
                                     {% endif %}
                                     </tbody>
                                 </table>
@@ -182,10 +112,11 @@
                         
                         <div class="profile-section" id="orders">
                             <h2>My Orders</h2>
+                            <p>Track your recent orders and review order details.</p>
                             <div class="orders-list">
-                                <div class="order-card">
                                 {% if orders %}
                                 {% for order in orders %}
+                                <div class="order-card">
                                     <div class="order-header">
                                         <div class="order-id">
                                             <span>Order #{{order.id}}</span>
@@ -196,32 +127,28 @@
                                             <span class="status {{order.status}}">{{order.status|title}}</span>
                                         </div>
                                     </div>
-                                    {% for item in order.products %}
                                     <div class="order-items">
+                                        {% for item in order.products %}
                                         <div class="order-item">
-                                            <img src="{{item.product_image}}" alt="Product">
+                                            <img src="{{item.product_image}}" alt="{{item.product_name}}">
                                             <div class="item-info">
                                                 <h4>{{item.product_name}}</h4>
                                                 <p>Qty: {{item.quantity}}</p>
                                             </div>
-                                            <div class="item-price">{{item.order_price|floatformat:2}}</div>
+                                            <div class="item-price">${{item.order_price|floatformat:2}}</div>
                                         </div>
+                                        {% endfor %}
                                     </div>
-                                    {% endfor %}
+                                </div>
                                 {% endfor %}
                                 {% else %}
-                                    <div class="order-header">
-                                        <div class="order-id">
-                                            <span>No orders yet!</span>
-                                        </div>
+                                <div class="order-header" style="justify-content: center; padding: 48px 20px; text-align: center; border-radius: 16px;">
+                                    <div class="order-id" style="text-align: center;">
+                                        <i class="fas fa-shopping-bag" style="font-size: 40px; color: #cbd5e1; margin-bottom: 12px; display: block;"></i>
+                                        <span style="font-size: 16px; color: #64748b; font-weight: 600;">No orders yet!</span>
                                     </div>
-                                {% endif %}
-                                    {% comment %} <div class="order-actions">
-                                        <button class="btn-reorder">Reorder</button>
-                                        <button class="btn-track">Track Order</button>
-                                        <button class="btn-details">View Details</button>
-                                    </div> {% endcomment %}
                                 </div>
+                                {% endif %}
                             </div>
                         </div>
                         
@@ -389,132 +316,49 @@
                         </div>
                         
                         <div class="profile-section" id="wishlist">
-                            <h2>My Wishlist</h2>
+                            <div class="section-header">
+                                <h2><i class="fas fa-heart" style="color: #e74c3c; margin-right: 8px;"></i> My Wishlist</h2>
+                                <p>Manage the items you've saved for later.</p>
+                            </div>
                             <div class="wishlist-items">
                                 {% if wishlist %}
                                 {% for product in wishlist %}
                                 <div class="product-card" data-product-id="{{product.id}}">
-                                    <a href="{% url 'product_view' product.id %}">
                                     <div class="product-image">
-                                        <img src="{{product.image.url}}" alt="Product">
-                                        <button class="wishlist-heart" onclick="toggleWishlist({{product.id}}, this)" style="display: block; position: absolute; top: 10px; right: 10px; background: transparent; border: none; cursor: pointer;">
-                                            <i class="fas fa-heart" style="color: red; font-size: 20px;"></i>
+                                        <a href="{% url 'product_view' product.id %}">
+                                            {% if product.image %}
+                                            <img src="{{product.image.url}}" alt="{{product.name}}">
+                                            {% else %}
+                                            <div class="placeholder-img" style="height: 100%; display: flex; align-items: center; justify-content: center; background: #f1f5f9; color: #94a3b8; font-size: 2rem;"><i class="fas fa-image"></i></div>
+                                            {% endif %}
+                                        </a>
+                                        <button type="button" class="wishlist-heart" onclick="toggleWishlist({{product.id}}, this)" title="Remove from wishlist">
+                                            <i class="fas fa-heart" style="color: #e74c3c;"></i>
                                         </button>
                                     </div>
                                     <div class="product-info">
-                                        <h3>{{product.name}}</h3>
+                                        <a href="{% url 'product_view' product.id %}" style="text-decoration: none; color: inherit;">
+                                            <h3>{{product.name}}</h3>
+                                        </a>
                                         <div class="price">
                                             <span class="current-price">${{product.price}}</span>
                                         </div>
-                                        </a>
-                                        <div class="product-actions">
-                                            <!-- <button class="btn-add-to-cart" onclick="addToCart({{product.id}}, this)">Add one to Cart</button> -->
-                                            <script>
-                                            function showNotification(message, type = 'success') {
-                                                const notification = document.getElementById('notification');
-                                                const messageElement = document.getElementById('notification-message');
-                                                
-                                                // Set message and style
-                                                messageElement.textContent = message;
-                                                notification.style.backgroundColor = type === 'success' ? '#4CAF50' : '#f44336';
-                                                
-                                                // Show notification
-                                                notification.style.display = 'block';
-                                                
-                                                // Hide after 3 seconds
-                                                setTimeout(() => {
-                                                    notification.style.display = 'none';
-                                                }, 3000);
-                                            }
-
-                                            function addToCart(productId, button) {
-                                                button.disabled = true;
-                                                button.textContent = 'Adding...';
-                                                
-                                                fetch(`{% url 'add_to_cart' product_id=0 %}`.replace('0', productId), {
-                                                    method: 'POST',
-                                                    headers: {
-                                                        'X-CSRFToken': '{{ csrf_token }}',
-                                                        'Content-Type': 'application/json'
-                                                    },
-                                                    body: JSON.stringify({ quantity: 1 })
-                                                })
-                                                .then(response => {
-                                                    if (!response.ok) {
-                                                        throw new Error('Network response was not ok');
-                                                    }
-                                                    return response.json();
-                                                })
-                                                .then(data => {
-                                                    if (data.success) {
-                                                        // Update cart count in header
-                                                        const cartCountElement = document.querySelector('.cart-count');
-                                                        if (cartCountElement) {
-                                                            cartCountElement.textContent = data.cart_count;
-                                                        }
-                                                        
-                                                        button.textContent = 'Add one more to Cart';
-                                                        button.disabled = false;
-                                                        button.classList.add('added');
-                                                        
-                                                        // Show success notification
-                                                        showNotification('Product added to cart successfully!');
-                                                    } else {
-                                                        throw new Error(data.error || 'Failed to add to cart');
-                                                    }
-                                                })
-                                                .catch(error => {
-                                                    console.error('Error:', error);
-                                                    showNotification('Failed to add item to cart', 'error');
-                                                    button.textContent = 'Add one to Cart';
-                                                    button.disabled = false;
-                                                });
-                                            }
-                                            </script>
+                                        <div class="product-actions" style="margin-top: 14px;">
+                                            <button type="button" class="btn-primary" style="width: 100%; padding: 9px 12px; font-size: 13px; border-radius: 8px; justify-content: center; display: inline-flex; align-items: center; gap: 8px;" onclick="addToCart(event, {{product.id}}, this)">
+                                                <i class="fas fa-shopping-cart"></i> Add to Cart
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
-                                
-                                <script>
-                                function toggleWishlist(productId, button) {
-                                    fetch(`/product/wishlist/${productId}/`, {
-                                        method: 'POST',
-                                        headers: {
-                                            'X-CSRFToken': '{{ csrf_token }}',
-                                            'Content-Type': 'application/json'
-                                        }
-                                    })
-                                    .then(response => {
-                                        if (response.ok) {
-                                            // Remove the product card from the wishlist
-                                            button.closest('.product-card').remove();
-                                            
-                                            // Check if there are any products left in the wishlist
-                                            const wishlistItems = document.querySelector('.wishlist-items');
-                                            if (wishlistItems.children.length === 0) {
-                                                // If no products left, show the "No wishlist items" message
-                                                wishlistItems.innerHTML = `
-                                                    <div class="order-header">
-                                                        <div class="order-id">
-                                                            <span>No wishlist items yet!</span>
-                                                        </div>
-                                                    </div>
-                                                `;
-                                            }
-                                        }
-                                    })
-                                    .catch(error => {
-                                        console.error('Error:', error);
-                                        alert('Failed to remove item from wishlist');
-                                    });
-                                }
-                                </script>
                                 {% endfor %}
                                 {% else %}
-                                <div class="order-header">
-                                    <div class="order-id">
-                                        <span>No wishlist items yet!</span>
-                                    </div>
+                                <div class="empty-state" style="grid-column: 1 / -1; padding: 48px 24px; text-align: center; background: #ffffff; border: 1px dashed #cbd5e1; border-radius: 16px;">
+                                    <div class="empty-icon" style="font-size: 3rem; color: #cbd5e1; margin-bottom: 12px;"><i class="fas fa-heart-broken"></i></div>
+                                    <div class="empty-title" style="font-size: 1.2rem; font-weight: 700; color: #334155; margin-bottom: 6px;">Your wishlist is empty</div>
+                                    <p class="empty-desc" style="color: #64748b; font-size: 14px; margin-bottom: 20px;">Explore our store and save your favorite products to your wishlist!</p>
+                                    <a href="{% url 'store' %}" class="btn-primary" style="display: inline-flex; align-items: center; gap: 8px; text-decoration: none; padding: 10px 24px; border-radius: 8px; font-weight: 600;">
+                                        <i class="fas fa-shopping-bag"></i> Browse Products
+                                    </a>
                                 </div>
                                 {% endif %}
                             </div>
@@ -745,656 +589,764 @@
                 </div>
             </div>
         </section>
-    </main>
+{% endblock %}
 
-    <div id="notification" class="notification" style="display: none; position: fixed; top: 20px; right: 20px; padding: 15px 25px; background-color: #4CAF50; color: white; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); z-index: 1000;">
-        <i class="fas fa-check-circle"></i>
-        <span id="notification-message"></span>
-    </div>
-
-    <footer>
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h3>ShopEasy</h3>
-                    <p>Your one-stop shop for all your needs.</p>
-                </div>
-                <div class="footer-section">
-                    <h3>Quick Links</h3>
-                    <ul>
-                        <li><a href="{% url 'store' %}">Home</a></li>
-                        <li><a href="{% url 'store' %}">Products</a></li>
-                        <li><a href="{% url 'shopping_cart' %}">Cart</a></li>
-                        <li><a href="{% url 'profile' %}">Account</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h3>Customer Service</h3>
-                    <ul>
-                        {% comment %} <li><a href="{% url 'complaint' %}">Contact Us</a></li> {% endcomment %}
-                        <li><a href="#">FAQs</a></li>
-                        <li><a href="#">Returns Policy</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2025 ShopEasy. All rights reserved.</p>
-            </div>
-        </div>
-    </footer>
-
-    <script src="{% static 'user/js/main.js' %}"></script>
+{% block extra_js %}
     <script>
-    function toggleAddressForm() {
-        const addAddressForm = document.getElementById('add-address-form');
-        const button = document.querySelector('.btn-add-address');
+    // Tab switching with URL hash support
+    function activateTab(tabId) {
+        if (!tabId) return;
+        const cleanId = tabId.replace('#', '');
+        const targetSection = document.getElementById(cleanId);
+        const targetLink = document.querySelector(`.profile-menu a[href="#${cleanId}"]`);
         
-        if (!addAddressForm || !button) {
-            console.error('Required elements not found');
-            return;
-        }
-
-        // Hide edit form if it's visible
-        const editForm = document.getElementById('edit-address-form');
-        if (editForm) {
-            editForm.style.display = 'none';
-        }
-
-        if (addAddressForm.style.display === 'none') {
-            addAddressForm.style.display = 'block';
-            button.style.display = 'none';
-        } else {
-            addAddressForm.style.display = 'none';
-            button.style.display = 'block';
+        if (targetSection && targetLink) {
+            document.querySelectorAll('.profile-menu li').forEach(li => li.classList.remove('active'));
+            document.querySelectorAll('.profile-section').forEach(sec => sec.classList.remove('active'));
+            
+            targetLink.parentElement.classList.add('active');
+            targetSection.classList.add('active');
         }
     }
 
-    // Handle address form submission
-    document.getElementById('address-form').addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        // Get form data
-        const formData = {
-            address_type: document.getElementById('address_type').value,
-            address: document.getElementById('address').value,
-            apartment: document.getElementById('apartment').value || '',
-            city: document.getElementById('city').value,
-            governorate: document.getElementById('governorate').value
-        };
-
-        // Validate required fields
-        if (!formData.address_type || !formData.address || !formData.city || !formData.governorate) {
-            alert('Please fill in all required fields');
-            return;
+    document.addEventListener('DOMContentLoaded', function() {
+        // Activate tab from URL hash if provided
+        if (window.location.hash) {
+            activateTab(window.location.hash);
         }
 
-        // Show loading state
-        const submitButton = this.querySelector('button[type="submit"]');
-        const originalButtonText = submitButton.textContent;
-        submitButton.textContent = 'Saving...';
-        submitButton.disabled = true;
-
-        fetch('{% url "add_address" %}', {
-            method: 'POST',
-            headers: {
-                'X-CSRFToken': '{{ csrf_token }}',
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(formData)
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // Create new address card
-                const addressCard = document.createElement('div');
-                addressCard.className = 'address-card';
-                addressCard.setAttribute('data-address-id', data.address.id);
-                addressCard.innerHTML = `
-                    <div class="address-header">
-                        <h3>${data.address.address_type}</h3>
-                        <div class="address-actions">
-                            <button class="edit-address" onclick="editAddress(${data.address.id})">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="remove-address" onclick="deleteAddress(${data.address.id})">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <p>${data.address.address}</p>
-                    ${data.address.apartment ? `<p>Apartment/Suite: ${data.address.apartment}</p>` : ''}
-                    <p>${data.address.city}, ${data.address.governorate}</p>
-                `;
-
-                // Insert new address card before the form
-                const addressesList = document.querySelector('.addresses-list');
-                const addAddressForm = document.getElementById('add-address-form');
-                addressesList.insertBefore(addressCard, addAddressForm);
-
-                // Reset and hide the form
-                document.getElementById('address-form').reset();
-                toggleAddressForm();
-
-                // Update address count in dashboard
-                const addressCountElement = document.querySelector('.stat-card:nth-child(3) .stat-info h3');
-                if (addressCountElement) {
-                    const currentCount = parseInt(addressCountElement.textContent);
-                    addressCountElement.textContent = currentCount + 1;
+        // Tab click listeners for in-page anchors
+        document.querySelectorAll('.profile-menu a[href^="#"]').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetHash = this.getAttribute('href');
+                if (history.pushState) {
+                    history.pushState(null, null, targetHash);
+                } else {
+                    window.location.hash = targetHash;
                 }
-
-                // Show success message
-                alert('Address added successfully!');
-            } else {
-                alert(data.error || 'Failed to add address');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Failed to add address');
-        })
-        .finally(() => {
-            // Reset button state
-            submitButton.textContent = originalButtonText;
-            submitButton.disabled = false;
+                activateTab(targetHash);
+            });
         });
-    });
 
-    // Handle profile form submission
-    document.getElementById('profile-form').addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        const formData = new FormData(this);
-        formData.append('action', 'update_profile');
-
-        // Show loading state
-        const submitButton = this.querySelector('button[type="submit"]');
-        const originalButtonText = submitButton.textContent;
-        submitButton.textContent = 'Saving...';
-        submitButton.disabled = true;
-
-        fetch('{% url "profile_edit" %}', {
-            method: 'POST',
-            headers: {
-                'X-CSRFToken': '{{ csrf_token }}'
-            },
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // Show success message
-                alert('Profile updated successfully!');
-                // Reload the page after a short delay
-                setTimeout(() => {
-                    window.location.reload();
-                }, 500);
-            } else {
-                alert(data.error || 'Failed to update profile');
-                submitButton.textContent = originalButtonText;
-                submitButton.disabled = false;
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Failed to update profile');
-            submitButton.textContent = originalButtonText;
-            submitButton.disabled = false;
-        });
-    });
-
-    // Handle password form submission
-    document.getElementById('password-form').addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        const formData = {
-            action: 'change_password',
-            current_password: document.getElementById('current-password').value,
-            new_password: document.getElementById('new-password').value,
-            confirm_password: document.getElementById('confirm-password').value
-        };
-
-        // Show loading state
-        const submitButton = this.querySelector('button[type="submit"]');
-        const originalButtonText = submitButton.textContent;
-        submitButton.textContent = 'Changing...';
-        submitButton.disabled = true;
-
-        fetch('{% url "profile_edit" %}', {
-            method: 'POST',
-            headers: {
-                'X-CSRFToken': '{{ csrf_token }}',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(formData)
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert('Password changed successfully!');
-                this.reset();
-            } else {
-                alert(data.error || 'Failed to change password');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Failed to change password');
-        })
-        .finally(() => {
-            submitButton.textContent = originalButtonText;
-            submitButton.disabled = false;
-        });
-    });
-
-    document.addEventListener('DOMContentLoaded', function() {
+        // Profile picture live upload
         const profilePicture = document.querySelector('.profile-picture');
         const profilePictureInput = document.getElementById('profile-picture-input');
         const profilePicturePreview = document.getElementById('profile-picture-preview');
         const headerProfilePicture = document.querySelector('#login-btn img');
 
-        profilePicture.addEventListener('click', function() {
-            profilePictureInput.click();
-        });
+        if (profilePicture && profilePictureInput) {
+            profilePicture.addEventListener('click', function() {
+                profilePictureInput.click();
+            });
 
-        profilePictureInput.addEventListener('change', function(e) {
-            if (this.files && this.files[0]) {
-                const file = this.files[0];
-                
-                // Preview the image
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    profilePicturePreview.src = e.target.result;
-                    headerProfilePicture.src = e.target.result;
-                }
-                reader.readAsDataURL(file);
+            profilePictureInput.addEventListener('change', function() {
+                if (this.files && this.files[0]) {
+                    const file = this.files[0];
+                    const prevSrc = profilePicturePreview ? profilePicturePreview.src : '';
+                    
+                    // Instant preview
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        if (profilePicturePreview) profilePicturePreview.src = e.target.result;
+                        if (headerProfilePicture) headerProfilePicture.src = e.target.result;
+                    };
+                    reader.readAsDataURL(file);
 
-                // Upload the image
-                const formData = new FormData();
-                formData.append('profile_picture', file);
-                formData.append('action', 'update_profile');
+                    // Upload
+                    const formData = new FormData();
+                    formData.append('profile_picture', file);
+                    formData.append('action', 'update_profile');
 
-                // Show loading state
-                profilePicture.classList.add('uploading');
-                profilePicture.querySelector('.profile-picture-overlay').innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Uploading...</span>';
-
-                fetch('{% url "profile_edit" %}', {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRFToken': '{{ csrf_token }}'
-                    },
-                    body: formData
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        // Update all profile pictures on the page
-                        const allProfilePictures = document.querySelectorAll('img[src*="profile_pictures"]');
-                        allProfilePictures.forEach(img => {
-                            img.src = data.user.profile.profile_picture;
-                        });
-                        
-                        // Show success message
-                        const overlay = profilePicture.querySelector('.profile-picture-overlay');
-                        overlay.innerHTML = '<i class="fas fa-check"></i><span>Updated!</span>';
-                        setTimeout(() => {
-                            overlay.innerHTML = '<i class="fas fa-camera"></i><span>Change Photo</span>';
-                        }, 2000);
-                    } else {
-                        throw new Error(data.error || 'Failed to update profile picture');
+                    profilePicture.classList.add('uploading');
+                    const overlay = profilePicture.querySelector('.profile-picture-overlay');
+                    if (overlay) {
+                        overlay.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Uploading...</span>';
                     }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert(error.message || 'Failed to update profile picture');
-                    // Revert to original image
-                    profilePicturePreview.src = '{{ user.profile.profile_picture.url }}';
-                    headerProfilePicture.src = '{{ user.profile.profile_picture.url }}';
-                })
-                .finally(() => {
-                    profilePicture.classList.remove('uploading');
-                });
-            }
-        });
 
-        // Add event listener for logout link
-        const logoutLink = document.querySelector('.logout-link');
-        if (logoutLink) {
-            logoutLink.addEventListener('click', function(e) {
-                e.preventDefault();
-                window.location.href = this.getAttribute('href');
+                    fetch('{% url "profile_edit" %}', {
+                        method: 'POST',
+                        headers: { 'X-CSRFToken': '{{ csrf_token }}' },
+                        body: formData
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            if (overlay) {
+                                overlay.innerHTML = '<i class="fas fa-check"></i><span>Updated!</span>';
+                                setTimeout(() => {
+                                    overlay.innerHTML = '<i class="fas fa-camera"></i><span>Change Photo</span>';
+                                }, 2500);
+                            }
+                            if (typeof showNotification === 'function') {
+                                showNotification('Profile picture updated successfully!', 'success');
+                            }
+                        } else {
+                            throw new Error(data.error || 'Failed to update photo');
+                        }
+                    })
+                    .catch(err => {
+                        console.error('Error:', err);
+                        if (profilePicturePreview && prevSrc) profilePicturePreview.src = prevSrc;
+                        if (headerProfilePicture && prevSrc) headerProfilePicture.src = prevSrc;
+                        if (typeof showNotification === 'function') {
+                            showNotification(err.message || 'Failed to upload photo', 'error');
+                        }
+                    })
+                    .finally(() => {
+                        profilePicture.classList.remove('uploading');
+                    });
+                }
+            });
+        }
+
+        // File upload previews for complaint forms
+        const techScreenshot = document.getElementById('tech-screenshot');
+        if (techScreenshot) {
+            techScreenshot.addEventListener('change', function(e) {
+                const names = Array.from(e.target.files).map(f => f.name).join(', ');
+                let small = this.parentNode.querySelector('small.file-preview-label');
+                if (!small) {
+                    small = document.createElement('small');
+                    small.className = 'file-preview-label';
+                    small.style.display = 'block';
+                    small.style.marginTop = '6px';
+                    small.style.color = '#3498db';
+                    small.style.fontWeight = '600';
+                    this.parentNode.appendChild(small);
+                }
+                small.textContent = names ? 'Selected files: ' + names : '';
+            });
+        }
+
+        const prodPhotos = document.getElementById('prod-photos');
+        if (prodPhotos) {
+            prodPhotos.addEventListener('change', function(e) {
+                const names = Array.from(e.target.files).map(f => f.name).join(', ');
+                let small = this.parentNode.querySelector('small.file-preview-label');
+                if (!small) {
+                    small = document.createElement('small');
+                    small.className = 'file-preview-label';
+                    small.style.display = 'block';
+                    small.style.marginTop = '6px';
+                    small.style.color = '#3498db';
+                    small.style.fontWeight = '600';
+                    this.parentNode.appendChild(small);
+                }
+                small.textContent = names ? 'Selected files: ' + names : '';
             });
         }
     });
 
-    function editAddress(addressId) {
-        // Hide add address form if visible
+    // Wishlist Toggle
+    function toggleWishlist(productId, button) {
+        if (!button) return;
+        const csrfToken = '{{ csrf_token }}';
+        
+        fetch(`/product/wishlist/${productId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrfToken,
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                const card = button.closest('.product-card');
+                if (card) {
+                    card.style.transition = 'all 0.3s ease';
+                    card.style.opacity = '0';
+                    card.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        card.remove();
+                        const list = document.querySelector('.wishlist-items');
+                        if (list && list.querySelectorAll('.product-card').length === 0) {
+                            list.innerHTML = `
+                                <div class="empty-state" style="grid-column: 1 / -1; padding: 48px 24px; text-align: center; background: #ffffff; border: 1px dashed #cbd5e1; border-radius: 16px;">
+                                    <div class="empty-icon" style="font-size: 3rem; color: #cbd5e1; margin-bottom: 12px;"><i class="fas fa-heart-broken"></i></div>
+                                    <div class="empty-title" style="font-size: 1.2rem; font-weight: 700; color: #334155; margin-bottom: 6px;">Your wishlist is empty</div>
+                                    <p class="empty-desc" style="color: #64748b; font-size: 14px; margin-bottom: 20px;">Explore our store and save your favorite products to your wishlist!</p>
+                                    <a href="{% url 'store' %}" class="btn-primary" style="display: inline-flex; align-items: center; gap: 8px; text-decoration: none; padding: 10px 24px; border-radius: 8px; font-weight: 600;">
+                                        <i class="fas fa-shopping-bag"></i> Browse Products
+                                    </a>
+                                </div>
+                            `;
+                        }
+                    }, 300);
+                }
+
+                // Decrement wishlist stat in dashboard
+                const wishlistStat = document.querySelector('.stat-card:nth-child(2) .stat-info h3');
+                if (wishlistStat) {
+                    const count = Math.max(0, (parseInt(wishlistStat.textContent) || 1) - 1);
+                    wishlistStat.textContent = count;
+                }
+                const badge = document.querySelector('.wishlist-count');
+                if (badge) {
+                    const count = Math.max(0, (parseInt(badge.textContent) || 1) - 1);
+                    badge.textContent = count;
+                }
+                if (typeof showNotification === 'function') {
+                    showNotification('Removed from wishlist', 'info');
+                }
+            } else {
+                throw new Error('Failed to update wishlist');
+            }
+        })
+        .catch(err => {
+            console.error('Error:', err);
+            if (typeof showNotification === 'function') {
+                showNotification('Failed to remove item from wishlist', 'error');
+            }
+        });
+    }
+
+    // Toggle Add Address Form
+    function toggleAddressForm() {
         const addAddressForm = document.getElementById('add-address-form');
+        const button = document.querySelector('.btn-add-address');
+        const editForm = document.getElementById('edit-address-form');
+        
+        if (editForm) editForm.style.display = 'none';
+        
         if (addAddressForm) {
-            addAddressForm.style.display = 'none';
-        }
-        
-        // Show edit form
-        const editForm = document.getElementById('edit-address-form');
-        if (!editForm) {
-            console.error('Edit form not found');
-            return;
-        }
-        editForm.style.display = 'block';
-        
-        // Get address data
-        const addressCard = document.querySelector(`.address-card[data-address-id="${addressId}"]`);
-        if (!addressCard) {
-            console.error('Address card not found');
-            return;
-        }
-
-        const addressType = addressCard.querySelector('h3').textContent;
-        const addressText = addressCard.querySelector('p').textContent;
-        const apartmentElement = addressCard.querySelector('p:nth-child(3)');
-        const apartment = apartmentElement ? apartmentElement.textContent.replace('Apartment/Suite: ', '') : '';
-        const [city, governorate] = addressCard.querySelector('p:last-child').textContent.split(', ');
-        
-        // Fill form with address data
-        document.getElementById('edit-address-id').value = addressId;
-        document.getElementById('edit-address-type').value = addressType;
-        document.getElementById('edit-address').value = addressText;
-        document.getElementById('edit-apartment').value = apartment;
-        document.getElementById('edit-city').value = city;
-        document.getElementById('edit-governorate').value = governorate;
-        
-        // Scroll to form
-        editForm.scrollIntoView({ behavior: 'smooth' });
-    }
-
-    function cancelEdit() {
-        const editForm = document.getElementById('edit-address-form');
-        if (editForm) {
-            editForm.style.display = 'none';
+            if (addAddressForm.style.display === 'none' || !addAddressForm.style.display) {
+                addAddressForm.style.display = 'block';
+                if (button) button.style.display = 'none';
+                addAddressForm.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            } else {
+                addAddressForm.style.display = 'none';
+                if (button) button.style.display = 'block';
+            }
         }
     }
 
-    function deleteAddress(addressId) {
-        if (confirm('Are you sure you want to delete this address?')) {
-            fetch(`/user/delete-address/${addressId}/`, {
+    // Address Form Submission
+    const addressFormEl = document.getElementById('address-form');
+    if (addressFormEl) {
+        addressFormEl.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                address_type: document.getElementById('address_type').value,
+                address: document.getElementById('address').value,
+                apartment: document.getElementById('apartment').value || '',
+                city: document.getElementById('city').value,
+                governorate: document.getElementById('governorate').value
+            };
+
+            if (!formData.address_type || !formData.address || !formData.city || !formData.governorate) {
+                if (typeof showNotification === 'function') {
+                    showNotification('Please fill in all required address fields', 'warning');
+                }
+                return;
+            }
+
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const origText = submitBtn ? submitBtn.innerHTML : 'Save Address';
+            if (submitBtn) {
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+                submitBtn.disabled = true;
+            }
+
+            fetch('{% url "add_address" %}', {
                 method: 'POST',
                 headers: {
                     'X-CSRFToken': '{{ csrf_token }}',
                     'Content-Type': 'application/json'
-                }
+                },
+                body: JSON.stringify(formData)
             })
-            .then(response => response.json())
+            .then(res => res.json())
             .then(data => {
                 if (data.success) {
-                    // Remove address card from DOM
-                    const addressCard = document.querySelector(`.address-card[data-address-id="${addressId}"]`);
-                    if (addressCard) {
-                        addressCard.remove();
-                        
-                        // Update address count in the dashboard stats
-                        const addressCountElement = document.querySelector('.stat-card:nth-child(3) .stat-info h3');
-                        if (addressCountElement) {
-                            const currentCount = parseInt(addressCountElement.textContent);
-                            addressCountElement.textContent = currentCount - 1;
-                        }
-                        
-                        // If no addresses left, show a message
-                        const addressesList = document.querySelector('.addresses-list');
-                        const remainingAddresses = addressesList.querySelectorAll('.address-card[data-address-id]');
-                        if (remainingAddresses.length === 0) {
-                            addressesList.innerHTML = `
-                                <div class="no-addresses">
-                                    <p>No addresses found. Add your first address!</p>
-                                    <button type="button" class="btn-add-address" onclick="toggleAddressForm()">+ Add New Address</button>
-                                </div>
-                            `;
-                        }
+                    const addressesList = document.querySelector('.addresses-list');
+                    const noAddresses = addressesList ? addressesList.querySelector('.no-addresses') : null;
+                    if (noAddresses) noAddresses.remove();
+
+                    const newCard = document.createElement('div');
+                    newCard.className = 'address-card';
+                    newCard.setAttribute('data-address-id', data.address.id);
+                    newCard.innerHTML = `
+                        <div class="address-header">
+                            <h3>${data.address.address_type}</h3>
+                            <div class="address-actions">
+                                <button type="button" class="edit-address" onclick="editAddress(${data.address.id})" title="Edit address">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button type="button" class="remove-address" onclick="deleteAddress(${data.address.id})" title="Delete address">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <p>${data.address.address}</p>
+                        ${data.address.apartment ? `<p>Apartment/Suite: ${data.address.apartment}</p>` : ''}
+                        <p>${data.address.city}, ${data.address.governorate}</p>
+                    `;
+
+                    const addFormContainer = document.getElementById('add-address-form');
+                    if (addressesList && addFormContainer) {
+                        addressesList.insertBefore(newCard, addFormContainer);
                     }
-                    alert('Address deleted successfully');
+
+                    addressFormEl.reset();
+                    toggleAddressForm();
+
+                    // Update address count
+                    const addressCountEl = document.querySelector('.stat-card:nth-child(3) .stat-info h3');
+                    if (addressCountEl) {
+                        addressCountEl.textContent = (parseInt(addressCountEl.textContent) || 0) + 1;
+                    }
+
+                    if (typeof showNotification === 'function') {
+                        showNotification('Address added successfully!', 'success');
+                    }
                 } else {
-                    alert(data.error || 'Failed to delete address');
+                    if (typeof showNotification === 'function') {
+                        showNotification(data.error || 'Failed to add address', 'error');
+                    }
                 }
             })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Failed to delete address');
+            .catch(err => {
+                console.error('Error:', err);
+                if (typeof showNotification === 'function') {
+                    showNotification('Failed to add address', 'error');
+                }
+            })
+            .finally(() => {
+                if (submitBtn) {
+                    submitBtn.innerHTML = origText;
+                    submitBtn.disabled = false;
+                }
             });
-        }
+        });
     }
 
-    // Handle edit address form submission
-    document.getElementById('edit-address-form-content').addEventListener('submit', function(e) {
-        e.preventDefault();
+    // Edit Address Handler
+    function editAddress(addressId) {
+        const addAddressForm = document.getElementById('add-address-form');
+        if (addAddressForm) addAddressForm.style.display = 'none';
         
-        const addressId = document.getElementById('edit-address-id').value;
-        const formData = {
-            address_type: document.getElementById('edit-address-type').value,
-            address: document.getElementById('edit-address').value,
-            apartment: document.getElementById('edit-apartment').value,
-            city: document.getElementById('edit-city').value,
-            governorate: document.getElementById('edit-governorate').value
-        };
+        const button = document.querySelector('.btn-add-address');
+        if (button) button.style.display = 'block';
 
-        // Show loading state
-        const submitButton = this.querySelector('button[type="submit"]');
-        const originalButtonText = submitButton ? submitButton.textContent : 'Save Changes';
-        if (submitButton) {
-            submitButton.textContent = 'Saving...';
-            submitButton.disabled = true;
+        const editForm = document.getElementById('edit-address-form');
+        if (!editForm) return;
+
+        const card = document.querySelector(`.address-card[data-address-id="${addressId}"]`);
+        if (!card) return;
+
+        const addressType = card.querySelector('h3') ? card.querySelector('h3').textContent.trim() : 'Home';
+        const pElements = card.querySelectorAll('p');
+        const street = pElements[0] ? pElements[0].textContent.trim() : '';
+        let apt = '';
+        let cityGov = '';
+
+        if (pElements.length === 3) {
+            apt = pElements[1].textContent.replace('Apartment/Suite: ', '').trim();
+            cityGov = pElements[2].textContent.trim();
+        } else if (pElements.length >= 2) {
+            cityGov = pElements[1].textContent.trim();
         }
 
-        fetch(`/user/edit-address/${addressId}/`, {
+        const [city, governorate] = cityGov.split(',').map(s => s.trim());
+
+        document.getElementById('edit-address-id').value = addressId;
+        document.getElementById('edit-address-type').value = addressType;
+        document.getElementById('edit-address').value = street;
+        document.getElementById('edit-apartment').value = apt;
+        document.getElementById('edit-city').value = city || '';
+        document.getElementById('edit-governorate').value = (governorate || '').toLowerCase();
+
+        editForm.style.display = 'block';
+        editForm.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function cancelEdit() {
+        const editForm = document.getElementById('edit-address-form');
+        if (editForm) editForm.style.display = 'none';
+    }
+
+    // Edit Address Submission
+    const editAddressFormEl = document.getElementById('edit-address-form-content');
+    if (editAddressFormEl) {
+        editAddressFormEl.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const addressId = document.getElementById('edit-address-id').value;
+            const formData = {
+                address_type: document.getElementById('edit-address-type').value,
+                address: document.getElementById('edit-address').value,
+                apartment: document.getElementById('edit-apartment').value,
+                city: document.getElementById('edit-city').value,
+                governorate: document.getElementById('edit-governorate').value
+            };
+
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const origText = submitBtn ? submitBtn.innerHTML : 'Save Changes';
+            if (submitBtn) {
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+                submitBtn.disabled = true;
+            }
+
+            fetch(`/user/edit-address/${addressId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    const card = document.querySelector(`.address-card[data-address-id="${addressId}"]`);
+                    if (card) {
+                        const h3 = card.querySelector('h3');
+                        if (h3) h3.textContent = data.address.address_type;
+                        const pEls = card.querySelectorAll('p');
+                        if (pEls[0]) pEls[0].textContent = data.address.address;
+                        
+                        let aptEl = card.querySelector('p:nth-child(3)');
+                        if (data.address.apartment) {
+                            if (aptEl && aptEl.textContent.includes('Apartment/Suite:')) {
+                                aptEl.textContent = `Apartment/Suite: ${data.address.apartment}`;
+                            } else {
+                                const newApt = document.createElement('p');
+                                newApt.textContent = `Apartment/Suite: ${data.address.apartment}`;
+                                card.insertBefore(newApt, pEls[pEls.length - 1]);
+                            }
+                        } else if (aptEl && aptEl.textContent.includes('Apartment/Suite:')) {
+                            aptEl.remove();
+                        }
+
+                        const lastP = card.querySelector('p:last-child');
+                        if (lastP) lastP.textContent = `${data.address.city}, ${data.address.governorate}`;
+                    }
+                    cancelEdit();
+                    if (typeof showNotification === 'function') {
+                        showNotification('Address updated successfully!', 'success');
+                    }
+                } else {
+                    if (typeof showNotification === 'function') {
+                        showNotification(data.error || 'Failed to update address', 'error');
+                    }
+                }
+            })
+            .catch(err => {
+                console.error('Error:', err);
+                if (typeof showNotification === 'function') {
+                    showNotification('Failed to update address', 'error');
+                }
+            })
+            .finally(() => {
+                if (submitBtn) {
+                    submitBtn.innerHTML = origText;
+                    submitBtn.disabled = false;
+                }
+            });
+        });
+    }
+
+    // Delete Address
+    function deleteAddress(addressId) {
+        if (!confirm('Are you sure you want to remove this address?')) return;
+
+        fetch(`/user/delete-address/${addressId}/`, {
             method: 'POST',
             headers: {
                 'X-CSRFToken': '{{ csrf_token }}',
                 'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(formData)
+            }
         })
-        .then(response => response.json())
+        .then(res => res.json())
         .then(data => {
             if (data.success) {
-                // Update address card in DOM
-                const addressCard = document.querySelector(`.address-card[data-address-id="${addressId}"]`);
-                if (addressCard) {
-                    const h3Element = addressCard.querySelector('h3');
-                    if (h3Element) h3Element.textContent = data.address.address_type;
-                    
-                    const firstP = addressCard.querySelector('p');
-                    if (firstP) firstP.textContent = data.address.address;
-                    
-                    if (data.address.apartment) {
-                        const apartmentP = addressCard.querySelector('p:nth-child(3)');
-                        if (apartmentP) apartmentP.textContent = `Apartment/Suite: ${data.address.apartment}`;
+                const card = document.querySelector(`.address-card[data-address-id="${addressId}"]`);
+                if (card) {
+                    card.style.transition = 'all 0.3s ease';
+                    card.style.opacity = '0';
+                    card.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        card.remove();
+                        const list = document.querySelector('.addresses-list');
+                        const remaining = list ? list.querySelectorAll('.address-card[data-address-id]') : [];
+                        if (remaining.length === 0 && list) {
+                            const noAddresses = document.createElement('div');
+                            noAddresses.className = 'no-addresses';
+                            noAddresses.innerHTML = `
+                                <div class="empty-state" style="padding: 32px 16px; text-align: center;">
+                                    <div class="empty-icon" style="font-size: 2.5rem; color: #cbd5e1; margin-bottom: 8px;"><i class="fas fa-map-marker-alt"></i></div>
+                                    <p style="color: #64748b; font-size: 14px; margin-bottom: 12px;">No addresses saved yet.</p>
+                                </div>
+                            `;
+                            const addForm = document.getElementById('add-address-form');
+                            list.insertBefore(noAddresses, addForm);
+                        }
+                    }, 300);
+                }
+
+                const addressCountEl = document.querySelector('.stat-card:nth-child(3) .stat-info h3');
+                if (addressCountEl) {
+                    addressCountEl.textContent = Math.max(0, (parseInt(addressCountEl.textContent) || 1) - 1);
+                }
+
+                if (typeof showNotification === 'function') {
+                    showNotification('Address removed successfully', 'info');
+                }
+            } else {
+                if (typeof showNotification === 'function') {
+                    showNotification(data.error || 'Failed to delete address', 'error');
+                }
+            }
+        })
+        .catch(err => {
+            console.error('Error:', err);
+            if (typeof showNotification === 'function') {
+                showNotification('Failed to delete address', 'error');
+            }
+        });
+    }
+
+    // Profile Form Submission
+    const profileFormEl = document.getElementById('profile-form');
+    if (profileFormEl) {
+        profileFormEl.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const origText = submitBtn ? submitBtn.innerHTML : 'Save Changes';
+            if (submitBtn) {
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+                submitBtn.disabled = true;
+            }
+
+            const formData = new FormData(this);
+            formData.append('action', 'update_profile');
+
+            fetch('{% url "profile_edit" %}', {
+                method: 'POST',
+                headers: { 'X-CSRFToken': '{{ csrf_token }}' },
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    if (typeof showNotification === 'function') {
+                        showNotification('Profile updated successfully!', 'success');
                     }
-                    
-                    const lastP = addressCard.querySelector('p:last-child');
-                    if (lastP) lastP.textContent = `${data.address.city}, ${data.address.governorate}`;
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 800);
+                } else {
+                    if (typeof showNotification === 'function') {
+                        showNotification(data.error || 'Failed to update profile', 'error');
+                    }
+                    if (submitBtn) {
+                        submitBtn.innerHTML = origText;
+                        submitBtn.disabled = false;
+                    }
                 }
-                
-                // Hide edit form
-                const editForm = document.getElementById('edit-address-form');
-                if (editForm) editForm.style.display = 'none';
-                
-                alert('Address updated successfully');
-                // Reload the page to ensure all elements are updated correctly
-                window.location.reload();
-            } else {
-                alert(data.error || 'Failed to update address');
-                if (submitButton) {
-                    submitButton.textContent = originalButtonText;
-                    submitButton.disabled = false;
+            })
+            .catch(err => {
+                console.error('Error:', err);
+                if (typeof showNotification === 'function') {
+                    showNotification('Failed to update profile', 'error');
                 }
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Failed to update address');
-            if (submitButton) {
-                submitButton.textContent = originalButtonText;
-                submitButton.disabled = false;
-            }
+                if (submitBtn) {
+                    submitBtn.innerHTML = origText;
+                    submitBtn.disabled = false;
+                }
+            });
         });
-    });
+    }
 
-    // Complaint form functions
+    // Password Form Submission
+    const passwordFormEl = document.getElementById('password-form');
+    if (passwordFormEl) {
+        passwordFormEl.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const currentPass = document.getElementById('current-password').value;
+            const newPass = document.getElementById('new-password').value;
+            const confirmPass = document.getElementById('confirm-password').value;
+
+            if (newPass !== confirmPass) {
+                if (typeof showNotification === 'function') {
+                    showNotification('New passwords do not match', 'warning');
+                }
+                return;
+            }
+
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const origText = submitBtn ? submitBtn.innerHTML : 'Change Password';
+            if (submitBtn) {
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Changing...';
+                submitBtn.disabled = true;
+            }
+
+            fetch('{% url "profile_edit" %}', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    action: 'change_password',
+                    current_password: currentPass,
+                    new_password: newPass,
+                    confirm_password: confirmPass
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    if (typeof showNotification === 'function') {
+                        showNotification('Password changed successfully!', 'success');
+                    }
+                    passwordFormEl.reset();
+                } else {
+                    if (typeof showNotification === 'function') {
+                        showNotification(data.error || 'Failed to change password', 'error');
+                    }
+                }
+            })
+            .catch(err => {
+                console.error('Error:', err);
+                if (typeof showNotification === 'function') {
+                    showNotification('Failed to change password', 'error');
+                }
+            })
+            .finally(() => {
+                if (submitBtn) {
+                    submitBtn.innerHTML = origText;
+                    submitBtn.disabled = false;
+                }
+            });
+        });
+    }
+
+    // Complaints logic
     function showComplaintForm(type) {
-        document.getElementById('complaint-types').style.display = 'none';
-        document.getElementById(type + '-form').style.display = 'block';
-    }
-    
-    function hideComplaintForms() {
-        document.getElementById('technical-form').style.display = 'none';
-        document.getElementById('product-form').style.display = 'none';
-        document.getElementById('complaint-types').style.display = 'block';
-    }
-    
-    // Handle technical complaint form submission
-    document.getElementById('techForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        // Show loading state
-        const submitButton = this.querySelector('button[type="submit"]');
-        const originalButtonText = submitButton.textContent;
-        submitButton.textContent = 'Submitting...';
-        submitButton.disabled = true;
-        
-        const formData = new FormData(this);
-        formData.append('complaint_type', 'technical');
-        
-        fetch('{% url "submit_technical_complaint" %}', {
-            method: 'POST',
-            headers: {
-                'X-CSRFToken': '{{ csrf_token }}'
-            },
-            body: formData
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(data => {
-            if (data.success) {
-                // Show success notification
-                showNotification('Technical complaint submitted successfully!', 'success');
-                
-                // Reset form and go back to complaint types
-                this.reset();
-                hideComplaintForms();
-            } else {
-                // Show error notification
-                showNotification(data.error || 'Failed to submit complaint', 'error');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            showNotification('Failed to submit complaint', 'error');
-        })
-        .finally(() => {
-            // Reset button state
-            submitButton.textContent = originalButtonText;
-            submitButton.disabled = false;
-        });
-    });
-    
-    function showNotification(message, type = 'success') {
-                                                const notification = document.getElementById('notification');
-                                                const messageElement = document.getElementById('notification-message');
-                                                
-                                                // Set message and style
-                                                messageElement.textContent = message;
-                                                notification.style.backgroundColor = type === 'success' ? '#4CAF50' : '#f44336';
-                                                
-                                                // Show notification
-                                                notification.style.display = 'block';
-                                                
-                                                // Hide after 3 seconds
-                                                setTimeout(() => {
-                                                    notification.style.display = 'none';
-                                                }, 3000);
-                                            }
+        const typesSection = document.getElementById('complaint-types');
+        const techForm = document.getElementById('technical-form');
+        const prodForm = document.getElementById('product-form');
 
-    // Handle product complaint form submission
-    document.getElementById('prodForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        // Show loading state
-        const submitButton = this.querySelector('button[type="submit"]');
-        const originalButtonText = submitButton.textContent;
-        submitButton.textContent = 'Submitting...';
-        submitButton.disabled = true;
-        
-        const formData = new FormData(this);
-        formData.append('complaint_type', 'product');
-        
-        fetch('{% url "submit_product_complaint" %}', {
-            method: 'POST',
-            headers: {
-                'X-CSRFToken': '{{ csrf_token }}'
-            },
-            body: formData
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
+        if (typesSection) typesSection.style.display = 'none';
+        if (techForm) techForm.style.display = (type === 'technical' ? 'block' : 'none');
+        if (prodForm) prodForm.style.display = (type === 'product' ? 'block' : 'none');
+
+        const activeForm = type === 'technical' ? techForm : prodForm;
+        if (activeForm) activeForm.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function hideComplaintForms() {
+        const typesSection = document.getElementById('complaint-types');
+        const techForm = document.getElementById('technical-form');
+        const prodForm = document.getElementById('product-form');
+
+        if (techForm) techForm.style.display = 'none';
+        if (prodForm) prodForm.style.display = 'none';
+        if (typesSection) typesSection.style.display = 'block';
+    }
+
+    // Technical Complaint Form Submission
+    const techFormEl = document.getElementById('techForm');
+    if (techFormEl) {
+        techFormEl.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const origText = submitBtn ? submitBtn.innerHTML : 'Submit Complaint';
+            if (submitBtn) {
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+                submitBtn.disabled = true;
             }
-            return response.json();
-        })
-        .then(data => {
-            if (data.success) {
-                // Show success notification
-                showNotification('Product complaint submitted successfully!', 'success');
-                
-                // Reset form and go back to complaint types
-                this.reset();
-                hideComplaintForms();
-            } else {
-                // Show error notification
-                showNotification(data.error || 'Failed to submit complaint', 'error');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            showNotification('Failed to submit complaint', 'error');
-        })
-        .finally(() => {
-            // Reset button state
-            submitButton.textContent = originalButtonText;
-            submitButton.disabled = false;
-        });
-    });
-    
-    // File upload preview for complaint forms
-    if (document.getElementById('tech-screenshot')) {
-        document.getElementById('tech-screenshot').addEventListener('change', function(e) {
-            const fileName = Array.from(e.target.files).map(file => file.name).join(', ');
-            if (fileName) {
-                const small = document.createElement('small');
-                small.textContent = 'Selected files: ' + fileName;
-                
-                // Remove previous message if exists
-                const previousSmall = this.nextElementSibling;
-                if (previousSmall && previousSmall.tagName === 'SMALL') {
-                    previousSmall.remove();
+
+            const formData = new FormData(this);
+            formData.append('complaint_type', 'technical');
+
+            fetch('{% url "submit_technical_complaint" %}', {
+                method: 'POST',
+                headers: { 'X-CSRFToken': '{{ csrf_token }}' },
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    if (typeof showNotification === 'function') {
+                        showNotification('Technical complaint submitted successfully!', 'success');
+                    }
+                    techFormEl.reset();
+                    const small = techFormEl.querySelector('.file-preview-label');
+                    if (small) small.textContent = '';
+                    hideComplaintForms();
+                } else {
+                    if (typeof showNotification === 'function') {
+                        showNotification(data.error || 'Failed to submit complaint', 'error');
+                    }
                 }
-                
-                this.parentNode.appendChild(small);
-            }
+            })
+            .catch(err => {
+                console.error('Error:', err);
+                if (typeof showNotification === 'function') {
+                    showNotification('Failed to submit complaint', 'error');
+                }
+            })
+            .finally(() => {
+                if (submitBtn) {
+                    submitBtn.innerHTML = origText;
+                    submitBtn.disabled = false;
+                }
+            });
         });
     }
-    
-    if (document.getElementById('prod-photos')) {
-        document.getElementById('prod-photos').addEventListener('change', function(e) {
-            const fileName = Array.from(e.target.files).map(file => file.name).join(', ');
-            if (fileName) {
-                const small = this.nextElementSibling;
-                if (small && small.tagName === 'SMALL') {
-                    small.textContent = 'Selected files: ' + fileName;
-                }
+
+    // Product Complaint Form Submission
+    const prodFormEl = document.getElementById('prodForm');
+    if (prodFormEl) {
+        prodFormEl.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const origText = submitBtn ? submitBtn.innerHTML : 'Submit Complaint';
+            if (submitBtn) {
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+                submitBtn.disabled = true;
             }
+
+            const formData = new FormData(this);
+            formData.append('complaint_type', 'product');
+
+            fetch('{% url "submit_product_complaint" %}', {
+                method: 'POST',
+                headers: { 'X-CSRFToken': '{{ csrf_token }}' },
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    if (typeof showNotification === 'function') {
+                        showNotification('Product complaint submitted successfully!', 'success');
+                    }
+                    prodFormEl.reset();
+                    const small = prodFormEl.querySelector('.file-preview-label');
+                    if (small) small.textContent = '';
+                    hideComplaintForms();
+                } else {
+                    if (typeof showNotification === 'function') {
+                        showNotification(data.error || 'Failed to submit complaint', 'error');
+                    }
+                }
+            })
+            .catch(err => {
+                console.error('Error:', err);
+                if (typeof showNotification === 'function') {
+                    showNotification('Failed to submit complaint', 'error');
+                }
+            })
+            .finally(() => {
+                if (submitBtn) {
+                    submitBtn.innerHTML = origText;
+                    submitBtn.disabled = false;
+                }
+            });
         });
     }
     </script>
-</body>
-</html>
+{% endblock %}

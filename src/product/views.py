@@ -1,3 +1,4 @@
+from user.models import Profile
 from django.shortcuts import render,redirect
 from django.urls import reverse
 from django.http import Http404
@@ -207,6 +208,12 @@ def product_view(request,product_id):
     return render(request, 'product/product-detail.html',{'product':product,'suggested_products':suggested_products})
 
 def wishlist_view(request):
+    if not request.user.is_authenticated:
+        return redirect('login_signup')
+    try:
+        profile = request.user.profile
+    except Profile.DoesNotExist:
+        return redirect('next_register')
     wishlist = request.user.wishlist_products.all()
     wishlist_count = wishlist.count()
     return render(request, 'product/favorites.html',{'wishlist_count':wishlist_count,'wishlist_items':wishlist})

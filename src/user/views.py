@@ -13,7 +13,7 @@ import json
 
 
 def login_signup_view(request):
-    return render(request, 'user/login_signup.html')
+    return render(request, 'user/Login_Signup.html')
 
 def logout_view(request):
     logout(request)
