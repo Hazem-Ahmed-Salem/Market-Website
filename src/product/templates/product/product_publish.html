@@ -6,6 +6,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Publish Product</title>
     <link rel="stylesheet" href="{% static 'product/css/product_publish.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .header-user-avatar,
+        .user-avatar,
+        .user-profile img {
+            width: 38px !important;
+            height: 38px !important;
+            max-width: 38px !important;
+            max-height: 38px !important;
+            min-width: 38px !important;
+            min-height: 38px !important;
+            border-radius: 50% !important;
+            object-fit: cover !important;
+            border: 2px solid #3498db !important;
+            display: inline-block !important;
+            vertical-align: middle !important;
+            box-shadow: 0 2px 6px rgba(52, 152, 219, 0.25) !important;
+            transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+        }
+        .header-user-avatar:hover,
+        .user-avatar:hover,
+        .user-profile img:hover {
+            transform: scale(1.08) !important;
+            box-shadow: 0 4px 10px rgba(52, 152, 219, 0.4) !important;
+        }
+    </style>
 </head>
 <body>
     <header class="header">
@@ -15,7 +41,12 @@
                 <div class="user-name">{{ user.get_full_name }}</div>
                 <div class="user-role">{{ user.role }}</div>
             </div>
-            <img src="{{ user.profile.profile_picture.url }}" alt="Profile" class="user-avatar">
+            {% if user.profile and user.profile.profile_picture %}
+            <img src="{{ user.profile.profile_picture.url }}" alt="Profile" class="user-avatar header-user-avatar" style="width: 38px; height: 38px; min-width: 38px; max-width: 38px; border-radius: 50%; object-fit: cover; border: 2px solid #3498db; vertical-align: middle; display: inline-block; box-shadow: 0 2px 6px rgba(52, 152, 219, 0.25); transition: transform 0.2s ease, box-shadow 0.2s ease;" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
+            <i class="fas fa-user-circle" style="font-size: 28px; vertical-align: middle; display: none;"></i>
+            {% else %}
+            <i class="fas fa-user-circle" style="font-size: 28px; vertical-align: middle;"></i>
+            {% endif %}
         </div>
     </header>
     

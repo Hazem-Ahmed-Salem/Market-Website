@@ -201,6 +201,62 @@ nav ul li a.active {
     color: var(--dark-color);
 }
 
+/* Empty State Styling for Categories */
+.no-categories-state {
+    background: var(--white-color);
+    border-radius: 16px;
+    padding: 48px 30px;
+    text-align: center;
+    max-width: 540px;
+    margin: 20px auto 40px auto;
+    border: 1px solid #eef2f6;
+    box-shadow: 0 10px 25px rgba(44, 62, 80, 0.05);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.no-categories-icon {
+    width: 72px;
+    height: 72px;
+    background: rgba(52, 152, 219, 0.1);
+    color: var(--primary-color);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    margin-bottom: 18px;
+    box-shadow: 0 8px 18px rgba(52, 152, 219, 0.15);
+}
+
+.no-categories-state h3 {
+    font-size: 1.4rem;
+    color: var(--dark-color);
+    margin-bottom: 8px;
+    font-weight: 700;
+}
+
+.no-categories-state p {
+    color: #7f8c8d;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    max-width: 440px;
+    margin: 0 auto 22px auto;
+}
+
+.no-categories-state .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 24px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    box-shadow: 0 4px 14px rgba(52, 152, 219, 0.28);
+}
+
 /* Featured Products */
 .featured-products {
     padding: 60px 0;
@@ -1071,7 +1127,7 @@ footer {
     cursor: pointer;
 }
 
-.shipping-option input:checked + label {
+.shipping-option input:checked+label {
     background: #f0f7ff;
     border-color: var(--primary-color);
 }
@@ -1219,7 +1275,7 @@ footer {
 
 .profile-menu ul {
     list-style: none;
-    display:flex;
+    display: flex;
     flex-direction: column;
 }
 
@@ -1333,27 +1389,32 @@ footer {
 }
 
 .status.pending {
-    background-color: #f39c12;  /* Orange */
+    background-color: #f39c12;
+    /* Orange */
     color: white;
 }
 
 .status.confirmed {
-    background-color: #3498db;  /* Blue */
+    background-color: #3498db;
+    /* Blue */
     color: white;
 }
 
 .status.shipped {
-    background-color: #9b59b6;  /* Purple */
+    background-color: #9b59b6;
+    /* Purple */
     color: white;
 }
 
 .status.delivered {
-    background-color: #2ecc71;  /* Green */
+    background-color: #2ecc71;
+    /* Green */
     color: white;
 }
 
 .status.cancelled {
-    background-color: #e74c3c;  /* Red */
+    background-color: #e74c3c;
+    /* Red */
     color: white;
 }
 
@@ -1625,15 +1686,18 @@ footer {
 }
 
 .btn-share:nth-child(1) {
-    background: #3b5998; /* Facebook */
+    background: #3b5998;
+    /* Facebook */
 }
 
 .btn-share:nth-child(2) {
-    background: #1da1f2; /* Twitter */
+    background: #1da1f2;
+    /* Twitter */
 }
 
 .btn-share:nth-child(3) {
-    background: #e1306c; /* Instagram */
+    background: #e1306c;
+    /* Instagram */
 }
 
 .btn-share:nth-child(4) {
@@ -1767,23 +1831,24 @@ footer {
 
 /* Responsive Styles */
 @media (max-width: 992px) {
+
     .product-detail-container,
     .cart-container,
     .checkout-container,
     .contact-container {
         grid-template-columns: 1fr;
     }
-    
+
     .order-summary,
     .cart-summary {
         position: static;
         margin-top: 30px;
     }
-    
+
     .profile-container {
         grid-template-columns: 1fr;
     }
-    
+
     .profile-sidebar {
         position: static;
         margin-bottom: 30px;
@@ -1795,21 +1860,21 @@ footer {
         flex-direction: column;
         padding: 15px;
     }
-    
+
     nav ul {
         margin: 15px 0;
     }
-    
+
     .header-icons {
         margin-top: 15px;
     }
-    
+
     .cart-header,
     .cart-item {
         grid-template-columns: 1fr;
         gap: 10px;
     }
-    
+
     .item-product,
     .item-quantity,
     .item-price,
@@ -1817,49 +1882,120 @@ footer {
     .item-actions {
         justify-content: flex-start;
     }
-    
+
     .item-actions {
         flex-direction: row;
     }
-    
+
     .checkout-steps {
         flex-direction: column;
         align-items: flex-start;
         gap: 20px;
     }
-    
+
     .checkout-steps::before {
         display: none;
     }
-    
+
     .step {
         flex-direction: row;
         gap: 10px;
     }
-    
+
     .step p {
         margin: 0;
     }
 }
 
 @media (max-width: 576px) {
+
     .categories-grid,
     .products-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .form-row {
         flex-direction: column;
         gap: 0;
     }
-    
+
     .cart-actions,
     .checkout-actions {
         flex-direction: column;
         gap: 10px;
     }
-    
+
     .btn {
         width: 100%;
     }
+}
+
+/* Header Avatar and Cart Badges (404.html Style) */
+.user-profile-link {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-decoration: none !important;
+    vertical-align: middle !important;
+}
+
+.header-user-avatar,
+.user-avatar,
+.profile-image,
+.user-profile-link img,
+header .user-profile-link img,
+header .header-icons img,
+.header-icons img,
+header .header-icons .header-user-avatar,
+.header-icons .header-user-avatar,
+header img.header-user-avatar,
+.header .profile-image,
+.header .user-avatar,
+.user-profile .user-avatar,
+.user-profile img {
+    width: 38px !important;
+    height: 38px !important;
+    max-width: 38px !important;
+    max-height: 38px !important;
+    min-width: 38px !important;
+    min-height: 38px !important;
+    border-radius: 50% !important;
+    object-fit: cover !important;
+    border: 2px solid #3498db !important;
+    display: inline-block !important;
+    vertical-align: middle !important;
+    box-shadow: 0 2px 6px rgba(52, 152, 219, 0.25) !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+.header-user-avatar:hover,
+.user-avatar:hover,
+.profile-image:hover,
+.user-profile-link:hover img,
+.user-profile-link img:hover,
+header .header-icons img:hover,
+.header-icons img:hover,
+header .header-icons .header-user-avatar:hover,
+.header-icons .header-user-avatar:hover,
+header img.header-user-avatar:hover,
+.header .profile-image:hover,
+.header .user-avatar:hover,
+.user-profile .user-avatar:hover,
+.user-profile img:hover {
+    transform: scale(1.08) !important;
+    box-shadow: 0 4px 10px rgba(52, 152, 219, 0.4) !important;
+}
+
+.cart-count {
+    background-color: var(--danger-color, #e74c3c);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 10px;
+    position: absolute;
+    top: -8px;
+    right: -10px;
+    min-width: 18px;
+    text-align: center;
 }

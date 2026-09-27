@@ -68,11 +68,24 @@ body {
 }
 
 .user-avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid var(--light-blue);
+    width: 38px !important;
+    height: 38px !important;
+    max-width: 38px !important;
+    max-height: 38px !important;
+    min-width: 38px !important;
+    min-height: 38px !important;
+    border-radius: 50% !important;
+    object-fit: cover !important;
+    border: 2px solid #3498db !important;
+    box-shadow: 0 2px 6px rgba(52, 152, 219, 0.25) !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+    display: inline-block !important;
+    vertical-align: middle !important;
+}
+
+.user-avatar:hover {
+    transform: scale(1.08) !important;
+    box-shadow: 0 4px 10px rgba(52, 152, 219, 0.4) !important;
 }
 
 /* Card Container */

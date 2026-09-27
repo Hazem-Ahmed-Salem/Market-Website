@@ -121,17 +121,23 @@ def edit_product_price(request, product_id):
 
 def new_products_view(request):
     products = Product.objects.filter(is_published=False)
+    if not products.exists():
+        return render(request, '404.html', {'message': 'There are no new unpublished products in the database.'}, status=404)
     return render(request, 'product/new_products.html',{'products':products})
 
 def product_preview(request):
     products = Product.objects.filter(is_published=True)
+    categories = Product.get_category_choices()
+    # if not products.exists() and not categories:
+    #     return render(request, '404.html', {'message': 'No products or categories were found in the database.'}, status=404)
+
     try:
         products_ids = random.sample(list(Product.objects.filter(is_published=True).values_list('id',flat=True)),12)
         products_to_show = Product.objects.filter(id__in=products_ids)
     except Exception as e:
         print(f"Error: {e}")
         products_to_show = products[:12]
-    categories = Product.get_category_choices()
+
     if request.user.is_authenticated:
         user_id = request.user.id
         recommended_ids = recommend_products_for_user(int(user_id),top_n=5)
@@ -147,9 +153,9 @@ def product_preview(request):
 
 def product_edit(request,product_id):
     product = Product.objects.filter(id=product_id).first()
-    category = Category.objects.filter(id=request.POST.get('category')).first()
     if not product:
-        raise Http404("Product not found")
+        return render(request, '404.html', {'message': f'Cannot edit: Product #{product_id} was not found in the database.'}, status=404)
+    category = Category.objects.filter(id=request.POST.get('category')).first()
     if request.method == 'POST':
         product.name = request.POST.get('name')
         product.description = request.POST.get('description')
@@ -173,6 +179,8 @@ def product_edit(request,product_id):
 
 def product_publish(request,product_id):
     product = Product.objects.filter(id=product_id).first()
+    if not product:
+        return render(request, '404.html', {'message': f'Cannot publish: Product #{product_id} was not found in the database.'}, status=404)
     categories = Product.get_category_choices()
     if request.method == 'POST':
         product.name = request.POST.get('name')
@@ -182,21 +190,20 @@ def product_publish(request,product_id):
         product.is_published = True
         product.save()
         return redirect('employee_view')
-    if not product:
-        raise Http404("Product not found")
-    categories = Product.get_category_choices()
     return render(request, 'product/product_publish.html',{'product':product,"categories":categories})
 
 def product_view(request,product_id):
     product = Product.objects.filter(id=product_id).first()
+    if not product:
+        return render(request, '404.html', {'message': f'Product with ID #{product_id} was not found in the database.'}, status=404)
+
     try:
         products_ids = random.sample(list(Product.objects.filter(category=product.category,is_published=True).values_list('id',flat=True)),4)
         suggested_products= Product.objects.filter(id__in=products_ids).exclude(id=product_id)
     except Exception as e:
         print(f"Error: {e}")
+        suggested_products = Product.objects.filter(category=product.category, is_published=True).exclude(id=product_id)[:4]
 
-    if not product:
-        raise Http404("Product not found")
     return render(request, 'product/product-detail.html',{'product':product,'suggested_products':suggested_products})
 
 def wishlist_view(request):
@@ -219,13 +226,24 @@ def wishlist(request,product_id):
                          "status":True},status=status.HTTP_200_OK)
 
 def all_products(request,category_name):
-    category = Category.objects.filter(name=category_name.title()).first()
-    if category_name == 'all':
+    if category_name.lower() == 'all':
         products = Product.objects.filter(is_published=True).all()
+        if not products.exists():
+            return render(request, '404.html', {
+                'message': 'There are no products available in the database.'
+            }, status=404)
     else:
-        products = Product.objects.filter(category=category,is_published=True)
-    if not category and not products:
-        raise Http404("Category not found")
+        category = Category.objects.filter(name__iexact=category_name).first()
+        if not category:
+            return render(request, '404.html', {
+                'message': f'The category "{category_name}" does not exist in the database.'
+            }, status=404)
+        products = Product.objects.filter(category=category, is_published=True)
+        if not products.exists():
+            return render(request, '404.html', {
+                'message': f'There are no products in the "{category.name}" category.'
+            }, status=404)
+
     categories = Product.get_category_choices()
     return render(request, 'product/all_products.html',{'products':products,'categories':categories,'category_name':category_name})
 

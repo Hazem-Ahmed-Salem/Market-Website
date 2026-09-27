@@ -316,8 +316,10 @@
                     </div>
                 {% endfor %}
             {% else %}
-                <div class="no-products">
-                    <p>No products available.</p>
+                <div class="no-products" style="text-align: center; padding: 60px 20px; background: white; border-radius: 12px; box-shadow: var(--card-shadow); grid-column: 1 / -1;">
+                    <i class="fas fa-box-open" style="font-size: 48px; color: #3498db; margin-bottom: 15px; display: block;"></i>
+                    <h3 style="color: #333; margin-bottom: 8px;">No Products Found</h3>
+                    <p style="color: #666; font-size: 15px; margin: 0;">There are currently no products in the catalog.</p>
                 </div>
             {% endif %}
         </div>
@@ -402,25 +404,34 @@
                             </tr>
                         </thead>
                         <tbody id="price-table-body">
-                            {% for product in products %}
-                                <tr class="price-row" style="border-bottom: 1px solid #e1e4e8;">
-                                    <td style="padding: 12px 15px; text-align: left;">
-                                        <div style="display: flex; align-items: center;">
-                                            {% if product.image %}
-                                                <img src="{{ product.image.url }}" alt="{{ product.name }}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px; margin-right: 10px;">
-                                            {% endif %}
-                                            <span>{{ product.name|title }}</span>
-                                        </div>
-                                    </td>
-                                    <td style="padding: 12px 15px; text-align: left;">{{ product.category.name|title }}</td>
-                                    <td style="padding: 12px 15px; text-align: right; font-weight: bold;">${{ product.price }}</td>
-                                    <td style="padding: 12px 15px; text-align: center;">
-                                        <button class="edit-price-btn" data-product-id="{{ product.id }}" data-product-name="{{ product.name }}" data-product-price="{{ product.price }}" style="background-color: #3498db; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer;">
-                                            Edit Price
-                                        </button>
+                            {% if products %}
+                                {% for product in products %}
+                                    <tr class="price-row" style="border-bottom: 1px solid #e1e4e8;">
+                                        <td style="padding: 12px 15px; text-align: left;">
+                                            <div style="display: flex; align-items: center;">
+                                                {% if product.image %}
+                                                    <img src="{{ product.image.url }}" alt="{{ product.name }}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px; margin-right: 10px;">
+                                                {% endif %}
+                                                <span>{{ product.name|title }}</span>
+                                            </div>
+                                        </td>
+                                        <td style="padding: 12px 15px; text-align: left;">{{ product.category.name|title }}</td>
+                                        <td style="padding: 12px 15px; text-align: right; font-weight: bold;">${{ product.price }}</td>
+                                        <td style="padding: 12px 15px; text-align: center;">
+                                            <button class="edit-price-btn" data-product-id="{{ product.id }}" data-product-name="{{ product.name }}" data-product-price="{{ product.price }}" style="background-color: #3498db; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer;">
+                                                Edit Price
+                                            </button>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="4" style="text-align: center; padding: 40px 20px; color: #666;">
+                                        <i class="fas fa-tags" style="font-size: 36px; color: #bdc3c7; display: block; margin-bottom: 12px;"></i>
+                                        <p style="margin: 0; font-size: 15px;">No products available for price monitoring.</p>
                                     </td>
                                 </tr>
-                            {% endfor %}
+                            {% endif %}
                         </tbody>
                     </table>
                 </div>
@@ -458,10 +469,14 @@
                 <div class="form-group" style="margin-bottom: 20px;">
                     <label for="prediction-product" style="display: block; margin-bottom: 5px;">Select Product:</label>
                     <select id="prediction-product" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                        <option value="">Choose a product...</option>
-                        {% for product in products %}
-                            <option value="{{ product.id }}">{{ product.name }}</option>
-                        {% endfor %}
+                        {% if products %}
+                            <option value="">Choose a product...</option>
+                            {% for product in products %}
+                                <option value="{{ product.id }}">{{ product.name }}</option>
+                            {% endfor %}
+                        {% else %}
+                            <option value="" disabled selected>No products available</option>
+                        {% endif %}
                     </select>
                 </div>
                 
@@ -513,16 +528,30 @@
                 </div>
                 
                 <div style="display: flex; flex-wrap: wrap; gap: 20px; margin-bottom: 30px;">
-                    <div style="flex: 1; min-width: 300px; background: #f8f9fa; padding: 20px; border-radius: 8px; box-shadow: var(--card-shadow);">
+                    <div style="flex: 1; min-width: 300px; background: #f8f9fa; padding: 20px; border-radius: 8px; box-shadow: var(--card-shadow); position: relative;">
                         <h3 style="margin: 0 0 15px 0; color: #3498db;">Sales Trend</h3>
                         <div style="height: 250px; position: relative;">
-                            <canvas id="sales-trend-chart"></canvas>
+                            {% if monthly_sales %}
+                                <canvas id="sales-trend-chart"></canvas>
+                            {% else %}
+                                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: #888;">
+                                    <i class="fas fa-chart-line" style="font-size: 40px; color: #bdc3c7; margin-bottom: 10px;"></i>
+                                    <p style="margin: 0; font-size: 15px;">No sales recorded yet</p>
+                                </div>
+                            {% endif %}
                         </div>
                     </div>
-                    <div style="flex: 1; min-width: 300px; background: #f8f9fa; padding: 20px; border-radius: 8px; box-shadow: var(--card-shadow);">
+                    <div style="flex: 1; min-width: 300px; background: #f8f9fa; padding: 20px; border-radius: 8px; box-shadow: var(--card-shadow); position: relative;">
                         <h3 style="margin: 0 0 15px 0; color: #3498db;">Top Categories</h3>
                         <div style="height: 250px; position: relative;">
-                            <canvas id="categories-chart"></canvas>
+                            {% if top_categories %}
+                                <canvas id="categories-chart"></canvas>
+                            {% else %}
+                                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: #888;">
+                                    <i class="fas fa-chart-pie" style="font-size: 40px; color: #bdc3c7; margin-bottom: 10px;"></i>
+                                    <p style="margin: 0; font-size: 15px;">No category sales data yet</p>
+                                </div>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
@@ -543,9 +572,13 @@
                     <label for="category-filter" style="display: block; margin-bottom: 5px; font-weight: 500;">Category:</label>
                     <select id="category-filter" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
                         <option value="all">All Categories</option>
-                        {% for category in categories %}
-                            <option value="{{ category.id }}">{{ category.name }}</option>
-                        {% endfor %}
+                        {% if categories %}
+                            {% for category in categories %}
+                                <option value="{{ category.id }}">{{ category.name }}</option>
+                            {% endfor %}
+                        {% else %}
+                            <option value="" disabled>No categories available</option>
+                        {% endif %}
                     </select>
                 </div>
                 <div style="align-self: flex-end;">
@@ -608,7 +641,10 @@
                             {% endfor %}
                         {% else %}
                             <tr>
-                                <td colspan="6" style="text-align: center; padding: 20px;">No sales data available for the selected period.</td>
+                                <td colspan="6" style="text-align: center; padding: 40px 20px; color: #666;">
+                                    <i class="fas fa-receipt" style="font-size: 36px; color: #bdc3c7; display: block; margin-bottom: 12px;"></i>
+                                    <p style="margin: 0; font-size: 15px;">No sales transactions found.</p>
+                                </td>
                             </tr>
                         {% endif %}
                     </tbody>
@@ -1655,127 +1691,120 @@
         
         // Function to initialize sales charts
         function initializeSalesCharts() {
-            // Check if charts are already initialized
-            if (window.salesTrendChart || window.categoriesChart) {
-                return;
-            }
-            
             // Get chart contexts
             const salesTrendCtx = document.getElementById('sales-trend-chart');
             const categoriesCtx = document.getElementById('categories-chart');
             
-            if (!salesTrendCtx || !categoriesCtx) {
-                return;
+            // Initialize sales trend chart if canvas exists and not yet initialized
+            if (salesTrendCtx && !window.salesTrendChart) {
+                const months = [];
+                const salesData = [];
+                
+                // Parse monthly_sales from Django template
+                {% if monthly_sales %}
+                    {% for month_data in monthly_sales %}
+                        months.push('{{ month_data.month }}');
+                        salesData.push({{ month_data.total }});
+                    {% endfor %}
+                {% endif %}
+                
+                if (months.length > 0) {
+                    window.salesTrendChart = new Chart(salesTrendCtx, {
+                        type: 'line',
+                        data: {
+                            labels: months,
+                            datasets: [{
+                                label: 'Sales ($)',
+                                data: salesData,
+                                borderColor: '#3498db',
+                                backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                                borderWidth: 2,
+                                tension: 0.3,
+                                fill: true
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: {
+                                        callback: function(value) {
+                                            return '$' + value;
+                                        }
+                                    }
+                                }
+                            },
+                            plugins: {
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            return 'Sales: $' + context.parsed.y;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
             }
             
-            // Data for sales trend chart
-            const months = [];
-            const salesData = [];
-            
-            // Parse monthly_sales from Django template
-            {% if monthly_sales %}
-                {% for month_data in monthly_sales %}
-                    months.push('{{ month_data.month }}');
-                    salesData.push({{ month_data.total }});
-                {% endfor %}
-            {% else %}
-                // Fallback sample data if no monthly sales data is provided
-                months.push('January', 'February', 'March', 'April', 'May', 'June');
-                salesData.push(4500, 5200, 4800, 6300, 5900, 7100);
-            {% endif %}
-            
-            // Create sales trend chart
-            window.salesTrendChart = new Chart(salesTrendCtx, {
-                type: 'line',
-                data: {
-                    labels: months,
-                    datasets: [{
-                        label: 'Sales ($)',
-                        data: salesData,
-                        borderColor: '#3498db',
-                        backgroundColor: 'rgba(52, 152, 219, 0.1)',
-                        borderWidth: 2,
-                        tension: 0.3,
-                        fill: true
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                callback: function(value) {
-                                    return '$' + value;
-                                }
-                            }
-                        }
-                    },
-                    plugins: {
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    return 'Sales: $' + context.parsed.y;
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-            
-            // Sample data for categories chart
-            const categories = [];
-            const categoryData = [];
-            const backgroundColors = [
-                '#3498db',
-                '#2ecc71',
-                '#e67e22',
-                '#9b59b6',
-                '#f1c40f',
-                '#e74c3c',
-                '#1abc9c',
-                '#34495e',
-                '#d35400',
-                '#8e44ad'
-            ];
-            
-            // Parse top_categories from Django template
-            {% if top_categories %}
-                {% for category in top_categories %}
-                    categories.push('{{ category.name }}');
-                    categoryData.push({{ category.count }});
-                {% endfor %}
-            {% endif %}
-            
-            // Create categories chart
-            window.categoriesChart = new Chart(categoriesCtx, {
-                type: 'doughnut',
-                data: {
-                    labels: categories,
-                    datasets: [{
-                        data: categoryData,
-                        backgroundColor: backgroundColors,
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'right'
+            // Initialize categories chart if canvas exists and not yet initialized
+            if (categoriesCtx && !window.categoriesChart) {
+                const categories = [];
+                const categoryData = [];
+                const backgroundColors = [
+                    '#3498db',
+                    '#2ecc71',
+                    '#e67e22',
+                    '#9b59b6',
+                    '#f1c40f',
+                    '#e74c3c',
+                    '#1abc9c',
+                    '#34495e',
+                    '#d35400',
+                    '#8e44ad'
+                ];
+                
+                // Parse top_categories from Django template
+                {% if top_categories %}
+                    {% for category in top_categories %}
+                        categories.push('{{ category.name }}');
+                        categoryData.push({{ category.count }});
+                    {% endfor %}
+                {% endif %}
+                
+                if (categories.length > 0) {
+                    window.categoriesChart = new Chart(categoriesCtx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: categories,
+                            datasets: [{
+                                data: categoryData,
+                                backgroundColor: backgroundColors,
+                                borderWidth: 1
+                            }]
                         },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    return context.label + ': ' + context.parsed + '%';
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    position: 'right'
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            return context.label + ': ' + context.parsed;
+                                        }
+                                    }
                                 }
                             }
                         }
-                    }
+                    });
                 }
-            });
+            }
             
             // Set up item details hover
             const saleItemsSummary = document.querySelectorAll('.sale-items-summary');

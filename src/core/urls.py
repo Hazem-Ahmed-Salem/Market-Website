@@ -19,6 +19,7 @@ from django.urls import path,include
 from work.views import landing
 from django.conf import settings
 from django.conf.urls.static import static
+from core.views import custom_404_view
 
 urlpatterns = [
     path('',landing),
@@ -28,7 +29,10 @@ urlpatterns = [
     path('order/', include('order.urls')),
     path('work/', include('work.urls')),
     path('ai/', include('AI.urls')),
+    path('404/', custom_404_view, name='page_not_found'),
 ]
+
+handler404 = 'core.views.custom_404_view'
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -68,11 +68,25 @@ body {
 }
 
 .user-info .profile-image {
-    width: 58px;
-    height: 58px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 1px solid var(--primary-blue);
+    width: 38px !important;
+    height: 38px !important;
+    max-width: 38px !important;
+    max-height: 38px !important;
+    min-width: 38px !important;
+    min-height: 38px !important;
+    border-radius: 50% !important;
+    object-fit: cover !important;
+    border: 2px solid #3498db !important;
+    box-shadow: 0 2px 6px rgba(52, 152, 219, 0.25) !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+    vertical-align: middle !important;
+    display: inline-block !important;
+}
+
+.user-info:hover .profile-image,
+.user-info .profile-image:hover {
+    transform: scale(1.08) !important;
+    box-shadow: 0 4px 10px rgba(52, 152, 219, 0.4) !important;
 }
 
 .order-container {

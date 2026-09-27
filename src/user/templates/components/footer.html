@@ -1,0 +1,30 @@
+<footer>
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>ShopEasy</h3>
+                <p>Your one-stop shop for fresh products, daily essentials, and quick home delivery.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="{% url 'store' %}">Home</a></li>
+                    <li><a href="{% url 'featured_products' 'all' %}">Products</a></li>
+                    <li><a href="{% url 'shopping_cart' %}">Cart</a></li>
+                    <li><a href="{% url 'wishlist_view' %}">Wishlist</a></li>
+                    <li><a href="{% url 'profile' %}">Account</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Customer Service</h3>
+                <ul>
+                    <li><a href="{% url 'profile' %}#complaints">Support & Complaints</a></li>
+                    <li><a href="{% url 'track_view' %}">Track Orders</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; {% now "Y" %} ShopEasy. All rights reserved.</p>
+        </div>
+    </div>
+</footer>

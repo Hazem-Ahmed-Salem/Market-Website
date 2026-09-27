@@ -62,6 +62,10 @@ def order_view(request):
 def checkout(request):
     addresses = Address.objects.filter(user=request.user)
     items = CartItem.objects.filter(customer=request.user)
+    if not items.exists():
+        return render(request, '404.html', {
+            'message': 'Your shopping cart is currently empty. Please add items to your cart before proceeding to checkout.'
+        }, status=404)
     total_price_without_vat = float(f"{sum(item.product.price * item.quantity for item in items):.2f}")
     
     # Group duplicate items by product and sum their quantities
@@ -115,7 +119,9 @@ def checkout(request):
     
     
 def receipt(request, order_id):
-    order = Order.objects.get(id=order_id)
+    order = Order.objects.filter(id=order_id).first()
+    if not order:
+        return render(request, '404.html', {'message': f'Order #{order_id} could not be found in the database.'}, status=404)
     return render(request, 'order/receipt.html', {'order': order})
 
 @api_view(['POST'])
